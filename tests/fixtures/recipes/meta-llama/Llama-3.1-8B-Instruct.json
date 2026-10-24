@@ -1,0 +1,285 @@
+{
+ "hf_id": "meta-llama/Llama-3.1-8B-Instruct",
+ "meta": {
+  "title": "Llama-3.1-8B-Instruct",
+  "slug": "llama-3.1-8b-instruct",
+  "provider": "Meta",
+  "description": "Meta's Llama 3.1 8B dense instruction-tuned language model with 128K context",
+  "date_added": "2025-10-15",
+  "date_updated": "2026-09-12",
+  "tasks": [
+   "text"
+  ],
+  "related_recipes": [
+   "meta-llama/Llama-3.3-70B-Instruct"
+  ],
+  "hardware": {
+   "h100": "verified",
+   "h200": "verified",
+   "mi300x": "verified",
+   "mi325x": "verified",
+   "mi355x": "verified",
+   "trillium": "verified",
+   "xeon6": "verified",
+   "arc_pro_b60": "verified",
+   "arc_pro_b70": "verified"
+  }
+ },
+ "recommended_command": {
+  "hardware": "h200",
+  "strategy": "single_node_tp",
+  "variant": "default",
+  "node_count": 1,
+  "deploy_type": "single_node",
+  "env": {},
+  "docker_image": "vllm/vllm-openai:latest",
+  "command": "vllm serve meta-llama/Llama-3.1-8B-Instruct \\\n  --tensor-parallel-size 1",
+  "argv": [
+   "vllm",
+   "serve",
+   "meta-llama/Llama-3.1-8B-Instruct",
+   "--tensor-parallel-size",
+   "1"
+  ],
+  "docker_command": "docker run --gpus all \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  vllm/vllm-openai:latest meta-llama/Llama-3.1-8B-Instruct \\\n  --tensor-parallel-size 1",
+  "docker_argv": [
+   "docker",
+   "run",
+   "--gpus",
+   "all",
+   "--privileged",
+   "--ipc=host",
+   "-p",
+   "8000:8000",
+   "-v",
+   "~/.cache/huggingface:/root/.cache/huggingface",
+   "vllm/vllm-openai:latest",
+   "meta-llama/Llama-3.1-8B-Instruct",
+   "--tensor-parallel-size",
+   "1"
+  ],
+  "strategy_spec": {
+   "name": "single_node_tp",
+   "deploy_type": "single_node",
+   "display_name": "Tensor Parallel",
+   "orientation": "latency",
+   "description": "Single-node tensor parallel. Splits the model across all local GPUs. TP size is set to the GPU count at deploy time. The simplest multi-GPU strategy \u2014 works for all model architectures.\n",
+   "hardware_match": {
+    "min_gpus": 1,
+    "max_gpus": 8,
+    "multi_node": false
+   },
+   "vllm_args": [],
+   "parallel_flag": "--tensor-parallel-size"
+  },
+  "hardware_profile": {
+   "brand": "NVIDIA",
+   "generation": "hopper",
+   "compute_arch": "sm90",
+   "display_name": "H200",
+   "description": "NVIDIA H200 SXM 141 GB HBM3e \u00b7 8-GPU HGX node",
+   "gpu_count": 8,
+   "vram_gb": 1128,
+   "multi_node": false
+  },
+  "alternatives": {
+   "multi_node_tp": "/meta-llama/Llama-3.1-8B-Instruct/strategies/multi_node_tp.json",
+   "kv_store_centralized_mooncake": "/meta-llama/Llama-3.1-8B-Instruct/strategies/kv_store_centralized_mooncake.json",
+   "kv_store_distributed_mooncake": "/meta-llama/Llama-3.1-8B-Instruct/strategies/kv_store_distributed_mooncake.json"
+  },
+  "by_hardware": {
+   "h200": "/meta-llama/Llama-3.1-8B-Instruct/hw/h200.json",
+   "h100": "/meta-llama/Llama-3.1-8B-Instruct/hw/h100.json",
+   "mi300x": "/meta-llama/Llama-3.1-8B-Instruct/hw/mi300x.json",
+   "mi325x": "/meta-llama/Llama-3.1-8B-Instruct/hw/mi325x.json",
+   "mi355x": "/meta-llama/Llama-3.1-8B-Instruct/hw/mi355x.json",
+   "trillium": "/meta-llama/Llama-3.1-8B-Instruct/hw/trillium.json",
+   "xeon6": "/meta-llama/Llama-3.1-8B-Instruct/hw/xeon6.json",
+   "arc_pro_b60": "/meta-llama/Llama-3.1-8B-Instruct/hw/arc_pro_b60.json",
+   "arc_pro_b70": "/meta-llama/Llama-3.1-8B-Instruct/hw/arc_pro_b70.json"
+  }
+ },
+ "model": {
+  "model_id": "meta-llama/Llama-3.1-8B-Instruct",
+  "min_vllm_version": "0.6.0",
+  "architecture": "dense",
+  "parameter_count": "8B",
+  "active_parameters": "8B",
+  "context_length": 131072,
+  "base_args": [],
+  "base_env": {},
+  "install": {
+   "pip": {
+    "command": "uv venv\nsource .venv/bin/activate\nuv pip install -U vllm --torch-backend auto"
+   },
+   "docker": {
+    "command": "docker pull vllm/vllm-openai:latest"
+   }
+  }
+ },
+ "features": {
+  "spec_decoding": {
+   "description": "EAGLE3 speculative decoding (requires vLLM >= 0.9.0)",
+   "args": [
+    "--speculative-config",
+    "{\"model\":\"RedHatAI/Llama-3.1-8B-Instruct-speculator.eagle3\",\"method\":\"eagle3\",\"num_speculative_tokens\":3}"
+   ]
+  }
+ },
+ "opt_in_features": [
+  "spec_decoding"
+ ],
+ "variants": {
+  "default": {
+   "precision": "bf16",
+   "vram_minimum_gb": 20,
+   "description": "Full precision BF16",
+   "supported_hardware": [
+    "h100",
+    "h200",
+    "mi300x",
+    "mi325x",
+    "mi355x",
+    "trillium",
+    "xeon6",
+    "arc_pro_b60",
+    "arc_pro_b70"
+   ]
+  },
+  "w8a8_int8": {
+   "model_id": "RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w8a8",
+   "precision": "int8",
+   "vram_minimum_gb": 10,
+   "description": "Red Hat AI INT8 W8A8 compressed-tensors checkpoint",
+   "supported_hardware": [
+    "xeon6"
+   ],
+   "json": "/RedHatAI/Meta-Llama-3.1-8B-Instruct-quantized.w8a8.json"
+  },
+  "awq_int4": {
+   "model_id": "hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4",
+   "precision": "int4",
+   "vram_minimum_gb": 5,
+   "description": "AWQ INT4 checkpoint",
+   "supported_hardware": [
+    "xeon6"
+   ],
+   "extra_args": [
+    "--quantization",
+    "awq"
+   ],
+   "json": "/hugging-quants/Meta-Llama-3.1-8B-Instruct-AWQ-INT4.json"
+  },
+  "nvfp4": {
+   "model_id": "nvidia/Llama-3.1-8B-Instruct-NVFP4",
+   "precision": "nvfp4",
+   "vram_minimum_gb": 5,
+   "description": "NVIDIA NVFP4 quantized weights for Blackwell GPUs",
+   "supported_hardware": [
+    "b200",
+    "b300",
+    "gb200",
+    "gb300"
+   ],
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "json": "/nvidia/Llama-3.1-8B-Instruct-NVFP4.json"
+  },
+  "nvidia_fp8": {
+   "model_id": "nvidia/Llama-3.1-8B-Instruct-FP8",
+   "precision": "fp8",
+   "vram_minimum_gb": 10,
+   "description": "FP8 quantized weights for Hopper/Blackwell GPUs",
+   "supported_hardware": [
+    "h100",
+    "h200"
+   ],
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "json": "/nvidia/Llama-3.1-8B-Instruct-FP8.json"
+  },
+  "fp8": {
+   "model_id": "RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8-dynamic",
+   "precision": "fp8",
+   "label": "FP8 Dynamic (RedHat)",
+   "vram_minimum_gb": 10,
+   "description": "RedHatAI FP8 (E4M3) with dynamic per-token activation quantization",
+   "supported_hardware": [
+    "h100",
+    "h200"
+   ],
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "json": "/RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8-dynamic.json"
+  },
+  "redhat_fp8": {
+   "model_id": "RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8",
+   "precision": "fp8",
+   "label": "FP8 (RedHat)",
+   "vram_minimum_gb": 10,
+   "description": "RedHatAI FP8 quantization",
+   "supported_hardware": [
+    "h100",
+    "h200"
+   ],
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "json": "/RedHatAI/Meta-Llama-3.1-8B-Instruct-FP8.json"
+  },
+  "redhat_fp8_block": {
+   "model_id": "RedHatAI/Llama-3.1-8B-Instruct-FP8-block",
+   "precision": "fp8",
+   "label": "FP8 Block (RedHat)",
+   "vram_minimum_gb": 10,
+   "description": "RedHatAI FP8 block quantization",
+   "supported_hardware": [
+    "h100",
+    "h200",
+    "xeon6"
+   ],
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "json": "/RedHatAI/Llama-3.1-8B-Instruct-FP8-block.json"
+  },
+  "redhat_nvfp4": {
+   "model_id": "RedHatAI/Llama-3.1-8B-Instruct-NVFP4",
+   "precision": "nvfp4",
+   "label": "NVFP4 (RedHat)",
+   "vram_minimum_gb": 6,
+   "description": "RedHatAI NVFP4 quantization",
+   "json": "/RedHatAI/Llama-3.1-8B-Instruct-NVFP4.json"
+  }
+ },
+ "kv_offload_support": {
+  "offloading_cpu": "verified",
+  "offloading_fs": "verified"
+ },
+ "hardware_overrides": {
+  "amd": {
+   "extra_args": [],
+   "extra_env": {
+    "VLLM_ROCM_USE_AITER": "1"
+   }
+  }
+ },
+ "guide": "## Overview\n\nLlama 3.1 Instruct is Meta's instruction-tuned language model family. The 8B dense\nvariant is lightweight and ideal for single-GPU deployment, with 128K context support.\nA 70B variant is also available (see related recipes).\n\nTPU support is provided through [vLLM TPU](https://github.com/vllm-project/tpu-inference) with a recipe for [Trillium](https://github.com/AI-Hypercomputer/tpu-recipes/tree/main/inference/trillium/vLLM/Llama3.x).\n\n## Prerequisites\n\n- Hardware: 1x GPU with >=16 GB VRAM (e.g. A100, L40S, H100, H200, MI300X/MI325X/MI355X), Intel XPU B60/B70, or 2x Xeon6/Xeon5 NUMA node\n- vLLM >= 0.6.0\n- CUDA Driver compatible with your vLLM version for 1x GPU\n- Docker with NVIDIA Container Toolkit (recommended) for 1x GPU\n\n### Install vLLM\n\n```bash\nuv venv\nsource .venv/bin/activate\nuv pip install vllm --torch-backend auto\n```\n\n### AMD ROCm\n\nThe ROCm wheel requires Python 3.12, ROCm 7.0+, and glibc >= 2.35. Use the\nROCm Docker image when your host environment does not meet those requirements.\n\n```bash\nuv venv --python 3.12\nsource .venv/bin/activate\nuv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/\n```\n\nLaunch on 1x MI300X / MI325X / MI355X with AITER enabled:\n\n```bash\nexport VLLM_ROCM_USE_AITER=1\nvllm serve meta-llama/Llama-3.1-8B-Instruct \\\n  --tensor-parallel-size 1\n```\n\nThe first AITER launch may take several minutes while ROCm kernels are compiled and cached.\n\n### pip (Intel Xeon 6 CPUs)\nFor Intel and AMD x86 CPUs, follow the [CPU pre-built wheels](https://docs.vllm.ai/en/latest/getting_started/installation/cpu/#pre-built-wheels) installation instructions.\n\n### Docker (Intel Xeon 6 CPUs)\n```bash\ndocker pull vllm/vllm-openai-cpu:latest-x86_64 # For Intel Xeon 6\n```\n### Docker (Intel XPU B60 / B70)\n```bash\ndocker pull vllm/vllm-openai-xpu:latest\n```\n### Docker (Cloud TPU \u2014 Trillium)\nTPU uses the separate `vllm/vllm-tpu` image (no pip wheel). Pull the tag specified by the upstream [Trillium recipe](https://github.com/AI-Hypercomputer/tpu-recipes/tree/main/inference/trillium/vLLM/Llama3.x), then run:\n```bash\ndocker run -itd --name llama31-tpu \\\n  --privileged --network host --shm-size 16G \\\n  -v /dev/shm:/dev/shm -e HF_TOKEN=$HF_TOKEN \\\n  vllm/vllm-tpu:latest \\\n  vllm serve meta-llama/Llama-3.1-8B-Instruct \\\n    --tensor-parallel-size 1 \\\n    --max-model-len 2048 \\\n    --host 0.0.0.0 --port 8000\n```\nThe 8B fits on a single chip (`v6e-1`, TP=1) \u2014 unlike the 70B, which needs a v6e-8 slice.\n\n### Intel Xeon 6 Deployment via Docker\n\nLaunch the x86 CPU vLLM Docker container for `meta-llama/Llama-3.1-8B-Instruct`:\n\n```bash\ndocker run \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  vllm/vllm-openai-cpu:latest-x86_64 meta-llama/Llama-3.1-8B-Instruct \\\n  --tensor-parallel-size 2\n```\n\nThe validation TP/DP layout and host-specific CPU placement are intentionally\nnot prescribed.\n\nThe following validation settings are not model requirements and are intentionally\nnot portable CPU recipe defaults:\n\n- `--max-num-batched-tokens` and `--max-num-seqs`: scheduler batch/concurrency\n  tuning for workload shape, latency targets, and platform capacity.\n- `--gpu-memory-utilization`: platform memory-budget tuning.\n- `--no-enable-prefix-caching`: workload/benchmark cache-policy tuning.\n- `VLLM_ENGINE_ITERATION_TIMEOUT_S`: runtime operational timeout tuning.\n\nHardware-specific overrides may still use these settings when they are part of a\nvalidated platform configuration.\n\n### Intel XPU (B60, B70)\n\n```bash\ndocker run --device /dev/dri \\\n  -v /dev/dri/by-path:/dev/dri/by-path --shm-size=16g \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  vllm/vllm-openai-xpu:latest \\\n  meta-llama/Llama-3.1-8B-Instruct \\\n  --max-model-len 8192\n```\n\n## Client Usage\n\n```python\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"http://localhost:8000/v1\", api_key=\"unused\")\nresponse = client.chat.completions.create(\n    model=\"meta-llama/Llama-3.1-8B-Instruct\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, how are you?\"}],\n)\nprint(response.choices[0].message.content)\n```\n\n## Speculative Decoding (EAGLE3)\n\nAn EAGLE3 draft head is available at\n[`RedHatAI/Llama-3.1-8B-Instruct-speculator.eagle3`](https://huggingface.co/RedHatAI/Llama-3.1-8B-Instruct-speculator.eagle3).\nEnable the **Spec Decoding** toggle above, or add the `--speculative-config` manually:\n\n```bash\nvllm serve meta-llama/Llama-3.1-8B-Instruct \\\n  --speculative-config '{\"model\":\"RedHatAI/Llama-3.1-8B-Instruct-speculator.eagle3\",\"method\":\"eagle3\",\"num_speculative_tokens\":3}'\n```\n\nEAGLE3 verification requires vLLM >= 0.9.0. `num_speculative_tokens` of 3 is a reasonable\nstarting point for chat workloads.\n\n## Troubleshooting\n\n**OOM on small GPUs:**\nLower `--max-model-len` or `--gpu-memory-utilization`.\n\n**EAGLE3 draft head not loading:**\nUpgrade vLLM to >= 0.9.0 \u2014 earlier releases don't support the EAGLE3 verification path.\n\n## References\n\n- [Model card](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct)\n- [EAGLE3 draft head](https://huggingface.co/RedHatAI/Llama-3.1-8B-Instruct-speculator.eagle3)\n- [Llama 3.1 70B model card](https://huggingface.co/meta-llama/Llama-3.1-70B-Instruct)\n- [TPU recipes: Trillium](https://github.com/AI-Hypercomputer/tpu-recipes/tree/main/inference/trillium/vLLM/Llama3.x)\n",
+ "source": {
+  "source": "vllm",
+  "repo": "vllm-project/vllm",
+  "ref": "main",
+  "sha": "109669cfb314d807f7e5fa474dcd03abfca8cbd4",
+  "path": "recipes/models/meta-llama/Llama-3.1-8B-Instruct.yaml",
+  "edit_url": "https://github.com/vllm-project/vllm/edit/main/recipes/models/meta-llama/Llama-3.1-8B-Instruct.yaml",
+  "overlays": []
+ }
+}

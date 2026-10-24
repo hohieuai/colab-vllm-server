@@ -1,0 +1,25 @@
+# Local settings and secrets
+.env
+.env.local
+.env.*.local
+.claude/settings.local.json
+
+# Run records, server logs, and evaluation output
+runs/
+evals/results/
+*.log
+
+# Caches
+cache/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+
+# Environment and build output
+.venv/
+build/
+dist/
+*.egg-info/
+
+# Internal notes, kept out of the public repository
+internal/

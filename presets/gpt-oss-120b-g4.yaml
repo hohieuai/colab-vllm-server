@@ -1,0 +1,20 @@
+# gpt-oss-120b on a Colab G4 (RTX PRO 6000 Blackwell, 96 GB), configured for
+# the highest output quality:
+#   - MXFP4 weights, the format OpenAI released the model in (65.2 GB).
+#   - BF16 KV cache, and the native 131,072-token context.
+#   - Requests should pass reasoning_effort: "high". vLLM has no server-side
+#     default for gpt-oss, and without it the model reasons at "medium".
+#
+# The recipe renders no command for rtx_pro_6000. The B200 command adds a
+# FlashInfer TRTLLM MXFP8 MoE setting that the recipe describes for B200
+# (sm100), not for this card (sm120). The H100 command, which the recipe
+# verifies, has no such setting and lets vLLM pick kernels for the card.
+recipe: openai/gpt-oss-120b
+variant: default
+gpu: G4
+profile: h100
+
+overrides:
+  --kv-cache-dtype: bfloat16
+
+frontend: python

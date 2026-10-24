@@ -1,0 +1,63 @@
+{
+ "hardware": "h100",
+ "strategy": "single_node_tp",
+ "variant": "default",
+ "node_count": 1,
+ "deploy_type": "single_node",
+ "env": {},
+ "docker_image": "vllm/vllm-openai:latest",
+ "command": "vllm serve meta-llama/Llama-3.1-8B-Instruct \\\n  --tensor-parallel-size 1",
+ "argv": [
+  "vllm",
+  "serve",
+  "meta-llama/Llama-3.1-8B-Instruct",
+  "--tensor-parallel-size",
+  "1"
+ ],
+ "docker_command": "docker run --gpus all \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  vllm/vllm-openai:latest meta-llama/Llama-3.1-8B-Instruct \\\n  --tensor-parallel-size 1",
+ "docker_argv": [
+  "docker",
+  "run",
+  "--gpus",
+  "all",
+  "--privileged",
+  "--ipc=host",
+  "-p",
+  "8000:8000",
+  "-v",
+  "~/.cache/huggingface:/root/.cache/huggingface",
+  "vllm/vllm-openai:latest",
+  "meta-llama/Llama-3.1-8B-Instruct",
+  "--tensor-parallel-size",
+  "1"
+ ],
+ "strategy_spec": {
+  "name": "single_node_tp",
+  "deploy_type": "single_node",
+  "display_name": "Tensor Parallel",
+  "orientation": "latency",
+  "description": "Single-node tensor parallel. Splits the model across all local GPUs. TP size is set to the GPU count at deploy time. The simplest multi-GPU strategy \u2014 works for all model architectures.\n",
+  "hardware_match": {
+   "min_gpus": 1,
+   "max_gpus": 8,
+   "multi_node": false
+  },
+  "vllm_args": [],
+  "parallel_flag": "--tensor-parallel-size"
+ },
+ "hardware_profile": {
+  "brand": "NVIDIA",
+  "generation": "hopper",
+  "compute_arch": "sm90",
+  "display_name": "H100",
+  "description": "NVIDIA H100 80GB NVLink (8-GPU node)",
+  "gpu_count": 8,
+  "vram_gb": 640,
+  "multi_node": false
+ },
+ "alternatives": {
+  "multi_node_tp": "/meta-llama/Llama-3.1-8B-Instruct/hw/h100/strategies/multi_node_tp.json",
+  "kv_store_centralized_mooncake": "/meta-llama/Llama-3.1-8B-Instruct/hw/h100/strategies/kv_store_centralized_mooncake.json",
+  "kv_store_distributed_mooncake": "/meta-llama/Llama-3.1-8B-Instruct/hw/h100/strategies/kv_store_distributed_mooncake.json"
+ }
+}

@@ -1,0 +1,348 @@
+{
+ "hf_id": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+ "meta": {
+  "title": "Qwen3-Coder-480B-A35B-Instruct",
+  "slug": "qwen3-coder-480b-a35b-instruct",
+  "provider": "Qwen",
+  "description": "Large coder MoE with 480B total / 35B active parameters, strong tool-use and code generation capabilities.",
+  "date_added": "2025-07-23",
+  "date_updated": "2026-04-17",
+  "tasks": [
+   "text"
+  ],
+  "performance_headline": "HumanEval 0.939, MBPP 0.918 (FP8). Recommended FP8 on 8x H200/H20 via DP=8",
+  "related_recipes": [],
+  "hardware": {
+   "h200": "verified",
+   "mi300x": "verified",
+   "mi325x": "verified",
+   "mi355x": "verified",
+   "ironwood": "verified"
+  }
+ },
+ "recommended_command": {
+  "hardware": "h200",
+  "strategy": "multi_node_tp",
+  "variant": "default",
+  "node_count": 2,
+  "deploy_type": "multi_node",
+  "env": {
+   "GLOO_SOCKET_IFNAME": "$IFACE_NAME",
+   "NCCL_SOCKET_IFNAME": "$IFACE_NAME",
+   "VLLM_USE_DEEP_GEMM": "1"
+  },
+  "docker_image": "vllm/vllm-openai:latest",
+  "head_command": "vllm serve Qwen/Qwen3-Coder-480B-A35B-Instruct \\\n  --tensor-parallel-size 16 \\\n  --nnodes 2 \\\n  --node-rank 0 \\\n  --master-addr $HEAD_IP \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder",
+  "worker_command": "vllm serve Qwen/Qwen3-Coder-480B-A35B-Instruct \\\n  --tensor-parallel-size 16 \\\n  --nnodes 2 \\\n  --node-rank 1 \\\n  --master-addr $HEAD_IP \\\n  --headless \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder",
+  "worker_commands": [
+   "vllm serve Qwen/Qwen3-Coder-480B-A35B-Instruct \\\n  --tensor-parallel-size 16 \\\n  --nnodes 2 \\\n  --node-rank 1 \\\n  --master-addr $HEAD_IP \\\n  --headless \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder"
+  ],
+  "head_argv": [
+   "vllm",
+   "serve",
+   "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+   "--tensor-parallel-size",
+   "16",
+   "--nnodes",
+   "2",
+   "--node-rank",
+   "0",
+   "--master-addr",
+   "$HEAD_IP",
+   "--enable-auto-tool-choice",
+   "--tool-call-parser",
+   "qwen3_coder"
+  ],
+  "worker_argv": [
+   "vllm",
+   "serve",
+   "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+   "--tensor-parallel-size",
+   "16",
+   "--nnodes",
+   "2",
+   "--node-rank",
+   "1",
+   "--master-addr",
+   "$HEAD_IP",
+   "--headless",
+   "--enable-auto-tool-choice",
+   "--tool-call-parser",
+   "qwen3_coder"
+  ],
+  "worker_argvs": [
+   [
+    "vllm",
+    "serve",
+    "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+    "--tensor-parallel-size",
+    "16",
+    "--nnodes",
+    "2",
+    "--node-rank",
+    "1",
+    "--master-addr",
+    "$HEAD_IP",
+    "--headless",
+    "--enable-auto-tool-choice",
+    "--tool-call-parser",
+    "qwen3_coder"
+   ]
+  ],
+  "head_docker_command": "docker run --gpus all \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  -e GLOO_SOCKET_IFNAME=$IFACE_NAME \\\n  -e NCCL_SOCKET_IFNAME=$IFACE_NAME \\\n  -e VLLM_USE_DEEP_GEMM=1 \\\n  vllm/vllm-openai:latest Qwen/Qwen3-Coder-480B-A35B-Instruct \\\n  --tensor-parallel-size 16 \\\n  --nnodes 2 \\\n  --node-rank 0 \\\n  --master-addr $HEAD_IP \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder",
+  "worker_docker_command": "docker run --gpus all \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  -e GLOO_SOCKET_IFNAME=$IFACE_NAME \\\n  -e NCCL_SOCKET_IFNAME=$IFACE_NAME \\\n  -e VLLM_USE_DEEP_GEMM=1 \\\n  vllm/vllm-openai:latest Qwen/Qwen3-Coder-480B-A35B-Instruct \\\n  --tensor-parallel-size 16 \\\n  --nnodes 2 \\\n  --node-rank 1 \\\n  --master-addr $HEAD_IP \\\n  --headless \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder",
+  "worker_docker_commands": [
+   "docker run --gpus all \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  -e GLOO_SOCKET_IFNAME=$IFACE_NAME \\\n  -e NCCL_SOCKET_IFNAME=$IFACE_NAME \\\n  -e VLLM_USE_DEEP_GEMM=1 \\\n  vllm/vllm-openai:latest Qwen/Qwen3-Coder-480B-A35B-Instruct \\\n  --tensor-parallel-size 16 \\\n  --nnodes 2 \\\n  --node-rank 1 \\\n  --master-addr $HEAD_IP \\\n  --headless \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder"
+  ],
+  "head_docker_argv": [
+   "docker",
+   "run",
+   "--gpus",
+   "all",
+   "--privileged",
+   "--ipc=host",
+   "-p",
+   "8000:8000",
+   "-v",
+   "~/.cache/huggingface:/root/.cache/huggingface",
+   "-e",
+   "GLOO_SOCKET_IFNAME=$IFACE_NAME",
+   "-e",
+   "NCCL_SOCKET_IFNAME=$IFACE_NAME",
+   "-e",
+   "VLLM_USE_DEEP_GEMM=1",
+   "vllm/vllm-openai:latest",
+   "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+   "--tensor-parallel-size",
+   "16",
+   "--nnodes",
+   "2",
+   "--node-rank",
+   "0",
+   "--master-addr",
+   "$HEAD_IP",
+   "--enable-auto-tool-choice",
+   "--tool-call-parser",
+   "qwen3_coder"
+  ],
+  "worker_docker_argv": [
+   "docker",
+   "run",
+   "--gpus",
+   "all",
+   "--privileged",
+   "--ipc=host",
+   "-p",
+   "8000:8000",
+   "-v",
+   "~/.cache/huggingface:/root/.cache/huggingface",
+   "-e",
+   "GLOO_SOCKET_IFNAME=$IFACE_NAME",
+   "-e",
+   "NCCL_SOCKET_IFNAME=$IFACE_NAME",
+   "-e",
+   "VLLM_USE_DEEP_GEMM=1",
+   "vllm/vllm-openai:latest",
+   "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+   "--tensor-parallel-size",
+   "16",
+   "--nnodes",
+   "2",
+   "--node-rank",
+   "1",
+   "--master-addr",
+   "$HEAD_IP",
+   "--headless",
+   "--enable-auto-tool-choice",
+   "--tool-call-parser",
+   "qwen3_coder"
+  ],
+  "worker_docker_argvs": [
+   [
+    "docker",
+    "run",
+    "--gpus",
+    "all",
+    "--privileged",
+    "--ipc=host",
+    "-p",
+    "8000:8000",
+    "-v",
+    "~/.cache/huggingface:/root/.cache/huggingface",
+    "-e",
+    "GLOO_SOCKET_IFNAME=$IFACE_NAME",
+    "-e",
+    "NCCL_SOCKET_IFNAME=$IFACE_NAME",
+    "-e",
+    "VLLM_USE_DEEP_GEMM=1",
+    "vllm/vllm-openai:latest",
+    "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+    "--tensor-parallel-size",
+    "16",
+    "--nnodes",
+    "2",
+    "--node-rank",
+    "1",
+    "--master-addr",
+    "$HEAD_IP",
+    "--headless",
+    "--enable-auto-tool-choice",
+    "--tool-call-parser",
+    "qwen3_coder"
+   ]
+  ],
+  "strategy_spec": {
+   "name": "multi_node_tp",
+   "deploy_type": "multi_node",
+   "display_name": "Multi-Node Tensor Parallel",
+   "orientation": "latency",
+   "description": "Multi-node TP. Splits the model across GPUs spanning multiple nodes. TP is set to total GPU count across all nodes. Head node serves requests, worker nodes run with --headless. Requires InfiniBand interconnect.\n",
+   "hardware_match": {
+    "min_gpus": 2,
+    "multi_node": true
+   },
+   "parallel_flag": "--tensor-parallel-size",
+   "env": {
+    "GLOO_SOCKET_IFNAME": "$IFACE_NAME",
+    "NCCL_SOCKET_IFNAME": "$IFACE_NAME"
+   }
+  },
+  "hardware_profile": {
+   "brand": "NVIDIA",
+   "generation": "hopper",
+   "compute_arch": "sm90",
+   "display_name": "H200",
+   "description": "NVIDIA H200 SXM 141 GB HBM3e \u00b7 8-GPU HGX node",
+   "gpu_count": 8,
+   "vram_gb": 1128,
+   "multi_node": false
+  },
+  "alternatives": {
+   "single_node_tp": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/single_node_tp.json",
+   "single_node_tep": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/single_node_tep.json",
+   "single_node_dep": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/single_node_dep.json",
+   "multi_node_tp_pp": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/multi_node_tp_pp.json",
+   "multi_node_dep": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/multi_node_dep.json",
+   "multi_node_tep": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/multi_node_tep.json",
+   "pd_cluster": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/pd_cluster.json",
+   "kv_store_centralized_mooncake": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/kv_store_centralized_mooncake.json",
+   "kv_store_distributed_mooncake": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/strategies/kv_store_distributed_mooncake.json"
+  },
+  "by_hardware": {
+   "h200": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/h200.json",
+   "h100": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/h100.json",
+   "b200": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/b200.json",
+   "gb200": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/gb200.json",
+   "b300": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/b300.json",
+   "gb300": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/gb300.json",
+   "mi300x": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/mi300x.json",
+   "mi325x": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/mi325x.json",
+   "mi350x": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/mi350x.json",
+   "mi355x": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/mi355x.json",
+   "ironwood": "/Qwen/Qwen3-Coder-480B-A35B-Instruct/hw/ironwood.json"
+  }
+ },
+ "model": {
+  "model_id": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+  "min_vllm_version": "0.10.0",
+  "architecture": "moe",
+  "parameter_count": "480B",
+  "active_parameters": "35B",
+  "context_length": 262144,
+  "base_args": [],
+  "base_env": {},
+  "install": {
+   "pip": {
+    "command": "uv venv\nsource .venv/bin/activate\nuv pip install -U vllm --torch-backend auto"
+   },
+   "docker": {
+    "command": "docker pull vllm/vllm-openai:latest"
+   },
+   "extras": [
+    {
+     "note": "Optional: opt into DeepGEMM FP8 MoE kernels for extra throughput",
+     "command": "export VLLM_USE_DEEP_GEMM=1",
+     "optional": true
+    }
+   ]
+  }
+ },
+ "features": {
+  "tool_calling": {
+   "description": "Enable automatic tool choice with Qwen3 Coder parser",
+   "args": [
+    "--enable-auto-tool-choice",
+    "--tool-call-parser",
+    "qwen3_coder"
+   ]
+  }
+ },
+ "opt_in_features": [],
+ "variants": {
+  "default": {
+   "precision": "bf16",
+   "vram_minimum_gb": 1152,
+   "description": "Full BF16 \u2014 8x H200/H20 (141GB \u00d7 8) recommended"
+  },
+  "fp8": {
+   "model_id": "Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8",
+   "precision": "fp8",
+   "vram_minimum_gb": 576,
+   "tp": 4,
+   "description": "Qwen official FP8 checkpoint \u2014 required for DP=8 serving",
+   "json": "/Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8.json"
+  },
+  "nvfp4": {
+   "model_id": "nvidia/Qwen3-Coder-480B-A35B-Instruct-NVFP4",
+   "precision": "nvfp4",
+   "vram_minimum_gb": 288,
+   "description": "NVIDIA NVFP4 quantized weights for Blackwell GPUs",
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "json": "/nvidia/Qwen3-Coder-480B-A35B-Instruct-NVFP4.json"
+  },
+  "redhat_fp8": {
+   "model_id": "RedHatAI/Qwen3-Coder-480B-A35B-Instruct-FP8",
+   "precision": "fp8",
+   "label": "FP8 (RedHat)",
+   "vram_minimum_gb": 576,
+   "description": "RedHatAI FP8 quantization",
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "json": "/RedHatAI/Qwen3-Coder-480B-A35B-Instruct-FP8.json"
+  }
+ },
+ "hardware_overrides": {
+  "hopper": {
+   "extra_args": [],
+   "extra_env": {
+    "VLLM_USE_DEEP_GEMM": "1"
+   }
+  },
+  "amd": {
+   "extra_args": [
+    "--attention-backend",
+    "rocm_aiter_fa",
+    "--moe-backend",
+    "aiter"
+   ],
+   "extra_env": {
+    "VLLM_ROCM_USE_AITER": "1"
+   }
+  }
+ },
+ "guide": "## Overview\n\n[Qwen3-Coder](https://github.com/QwenLM/Qwen3-Coder) is an advanced large language model created by the Qwen team. `Qwen3-Coder-480B-A35B-Instruct` is the flagship coder MoE with 480B total / 35B active parameters. vLLM supports it including tool calling; the guide below covers BF16 and FP8 serving on NVIDIA and AMD GPUs.\n\nTPU support is provided through [vLLM TPU](https://github.com/vllm-project/tpu-inference) with a recipe for [Ironwood](https://github.com/AI-Hypercomputer/tpu-recipes/tree/main/inference/ironwood/vLLM/Qwen3-Coder-480B-A35B). The Ironwood docker command rendered by the hardware picker uses the `vllm/vllm-tpu` image; pin to the tag specified by the upstream recipe.\n\n## Prerequisites\n\n### CUDA\n```bash\nuv venv\nsource .venv/bin/activate\nuv pip install -U vllm --torch-backend auto\n```\n\n### ROCm (MI300X, MI325X, MI355X)\n```bash\nuv venv\nsource .venv/bin/activate\nuv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm/\n```\nThe ROCm wheel requires Python 3.12, ROCm 7.0, and glibc >= 2.35.\n\n## Deployment Configurations\n\n### 8xH200 / 8xH20 BF16\n```bash\nvllm serve Qwen/Qwen3-Coder-480B-A35B-Instruct \\\n  --max-model-len 32000 \\\n  --enable-expert-parallel \\\n  --tensor-parallel-size 8 \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder\n```\n\n### 8xH200 / 8xH20 FP8 (DP=8, recommended)\n```bash\nVLLM_USE_DEEP_GEMM=1 vllm serve Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \\\n  --max-model-len 131072 \\\n  --enable-expert-parallel \\\n  --data-parallel-size 8 \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder\n```\n\n### 8xMI300X/MI325X/MI355X BF16\n```bash\nVLLM_ROCM_USE_AITER=1 vllm serve Qwen/Qwen3-Coder-480B-A35B-Instruct \\\n  --max-model-len 32000 \\\n  --attention-backend rocm_aiter_fa \\\n  --moe-backend aiter \\\n  --enable-expert-parallel \\\n  --tensor-parallel-size 8 \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder\n```\n\n### 8xMI300X/MI325X/MI355X FP8\n```bash\nVLLM_ROCM_USE_AITER=1 vllm serve Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \\\n  --trust-remote-code \\\n  --max-model-len 131072 \\\n  --attention-backend rocm_aiter_fa \\\n  --moe-backend aiter \\\n  --enable-expert-parallel \\\n  --data-parallel-size 8 \\\n  --enable-auto-tool-choice \\\n  --tool-call-parser qwen3_coder\n```\n\n## Client Usage\n\n```bash\nvllm bench serve \\\n  --backend vllm \\\n  --model Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8 \\\n  --endpoint /v1/completions \\\n  --dataset-name random \\\n  --random-input 2048 \\\n  --random-output 1024 \\\n  --max-concurrency 10 \\\n  --num-prompt 100\n```\n\n## Troubleshooting\n\n- **Context-length OOM**: A single H20 node cannot serve the native 262144 context. Reduce `--max-model-len` or raise `--gpu-memory-utilization`.\n- **TP=8 failure on FP8**: Expect `ValueError: The output_size of gate's and up's weight = 320 is not divisible by weight quantization block_n = 128.` on FP8 with TP=8. Switch to `--data-parallel-size 8` instead.\n- **DeepGEMM**: set `VLLM_USE_DEEP_GEMM=1` for faster FP8 matmul. Follow the [setup instructions](https://github.com/vllm-project/vllm/blob/main/benchmarks/kernels/deepgemm/README.md#setup) to install it.\n- **Tool calling**: add `--tool-call-parser qwen3_coder` as shown above.\n\n## Evaluation\n\n| Dataset    | Test Type          | Pass@1 Score |\n|------------|--------------------|--------------|\n| HumanEval  | Base tests         | 0.939        |\n| HumanEval+ | Base + extra tests | 0.902        |\n| MBPP       | Base tests         | 0.918        |\n| MBPP+      | Base + extra tests | 0.794        |\n\n## References\n\n- [Model card](https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct)\n- [FP8 checkpoint](https://huggingface.co/Qwen/Qwen3-Coder-480B-A35B-Instruct-FP8)\n- [Qwen3-Coder GitHub](https://github.com/QwenLM/Qwen3-Coder)\n- [EvalPlus](https://github.com/evalplus/evalplus)\n- [TPU recipes: Ironwood](https://github.com/AI-Hypercomputer/tpu-recipes/tree/main/inference/ironwood/vLLM/Qwen3-Coder-480B-A35B)\n",
+ "source": {
+  "source": "vllm",
+  "repo": "vllm-project/vllm",
+  "ref": "main",
+  "sha": "109669cfb314d807f7e5fa474dcd03abfca8cbd4",
+  "path": "recipes/models/Qwen/Qwen3-Coder-480B-A35B-Instruct.yaml",
+  "edit_url": "https://github.com/vllm-project/vllm/edit/main/recipes/models/Qwen/Qwen3-Coder-480B-A35B-Instruct.yaml",
+  "overlays": []
+ }
+}

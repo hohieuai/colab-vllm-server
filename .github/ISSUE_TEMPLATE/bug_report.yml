@@ -1,0 +1,81 @@
+name: Bug report
+description: Report a command that fails or behaves differently from the documentation
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before you file a bug, check [Troubleshooting](https://github.com/hohieuai/colab-vllm-server/blob/main/docs/troubleshooting.md) and the [open issues](https://github.com/hohieuai/colab-vllm-server/issues).
+
+        Problems with vLLM itself, the Colab CLI, or a recipe's settings belong in their own projects. Report a security problem privately, as [SECURITY.md](https://github.com/hohieuai/colab-vllm-server/blob/main/SECURITY.md) describes.
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Checklist
+      options:
+        - label: I searched the existing issues, and this bug is not reported yet.
+          required: true
+        - label: I use the latest version of colab-vllm-server from the main branch.
+          required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened
+      description: The command you ran and what it did.
+      placeholder: |
+        I ran `uv run serve up qwen3.8-27b-a100-80g`, and it stopped with ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: What the command should have done, and the documentation page that says so, if any.
+    validations:
+      required: true
+
+  - type: textarea
+    id: output
+    attributes:
+      label: Output
+      description: The command's output, and the end of the server log (`tail -50 ~/colab-runs/<session>.log`). Remove any tokens before you paste.
+      render: shell
+    validations:
+      required: true
+
+  - type: input
+    id: preset
+    attributes:
+      label: Preset
+      placeholder: qwen3.8-27b-a100-80g
+    validations:
+      required: true
+
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      description: Paste the output of these commands.
+      value: |
+        colab version:
+        uv --version:
+        vLLM version (from the server log line "[colab-vllm-server] vLLM ..."):
+        GPU (from the server log line "[colab-vllm-server] GPU: ..."):
+    validations:
+      required: true
+
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - macOS
+        - Linux
+        - Dev container
+    validations:
+      required: true

@@ -1,0 +1,408 @@
+{
+ "hf_id": "zai-org/GLM-5.3",
+ "meta": {
+  "title": "GLM-5.3",
+  "slug": "glm-5.3",
+  "provider": "GLM (Z-AI)",
+  "description": "GLM-5.3 \u2014 Frontier Coding with Emergent Cyber Capabilities",
+  "date_added": "2026-08-28",
+  "date_updated": "2026-10-15",
+  "tasks": [
+   "text"
+  ],
+  "performance_headline": "Latest GLM-5 series MoE \u2014 native FP8 by default, 5-token MTP, 1M context",
+  "related_recipes": [
+   "zai-org/GLM-5.2",
+   "zai-org/GLM-5.3-Flash"
+  ],
+  "default_hardware": "b300",
+  "hardware": {
+   "b300": "verified",
+   "h200": "verified",
+   "mi325x": "verified",
+   "mi350x": "verified",
+   "ascend_950pr_8x": "verified",
+   "dgx_station_gb300": "verified"
+  }
+ },
+ "recommended_command": {
+  "hardware": "b300",
+  "strategy": "single_node_tp",
+  "variant": "default",
+  "node_count": 1,
+  "deploy_type": "single_node",
+  "env": {
+   "VLLM_USE_RUST_FRONTEND": "1"
+  },
+  "docker_image": "vllm/vllm-openai:latest",
+  "command": "vllm serve zai-org/GLM-5.3 \\\n  --kv-cache-dtype fp8_e4m3 \\\n  --tensor-parallel-size 8 \\\n  --tool-call-parser glm47 \\\n  --enable-auto-tool-choice \\\n  --reasoning-parser glm47",
+  "argv": [
+   "vllm",
+   "serve",
+   "zai-org/GLM-5.3",
+   "--kv-cache-dtype",
+   "fp8_e4m3",
+   "--tensor-parallel-size",
+   "8",
+   "--tool-call-parser",
+   "glm47",
+   "--enable-auto-tool-choice",
+   "--reasoning-parser",
+   "glm47"
+  ],
+  "docker_command": "docker run --gpus all \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  -e VLLM_USE_RUST_FRONTEND=1 \\\n  vllm/vllm-openai:latest zai-org/GLM-5.3 \\\n  --kv-cache-dtype fp8_e4m3 \\\n  --tensor-parallel-size 8 \\\n  --tool-call-parser glm47 \\\n  --enable-auto-tool-choice \\\n  --reasoning-parser glm47",
+  "docker_argv": [
+   "docker",
+   "run",
+   "--gpus",
+   "all",
+   "--privileged",
+   "--ipc=host",
+   "-p",
+   "8000:8000",
+   "-v",
+   "~/.cache/huggingface:/root/.cache/huggingface",
+   "-e",
+   "VLLM_USE_RUST_FRONTEND=1",
+   "vllm/vllm-openai:latest",
+   "zai-org/GLM-5.3",
+   "--kv-cache-dtype",
+   "fp8_e4m3",
+   "--tensor-parallel-size",
+   "8",
+   "--tool-call-parser",
+   "glm47",
+   "--enable-auto-tool-choice",
+   "--reasoning-parser",
+   "glm47"
+  ],
+  "strategy_spec": {
+   "name": "single_node_tp",
+   "deploy_type": "single_node",
+   "display_name": "Tensor Parallel",
+   "orientation": "latency",
+   "description": "Single-node tensor parallel. Splits the model across all local GPUs. TP size is set to the GPU count at deploy time. The simplest multi-GPU strategy \u2014 works for all model architectures.\n",
+   "hardware_match": {
+    "min_gpus": 1,
+    "max_gpus": 8,
+    "multi_node": false
+   },
+   "vllm_args": [],
+   "parallel_flag": "--tensor-parallel-size"
+  },
+  "hardware_profile": {
+   "brand": "NVIDIA",
+   "generation": "blackwell",
+   "compute_arch": "sm103",
+   "display_name": "B300",
+   "description": "NVIDIA B300 SXM 268 GB HBM3e \u00b7 8-GPU HGX B300 node (Blackwell Ultra)",
+   "gpu_count": 8,
+   "vram_gb": 2144,
+   "multi_node": false
+  },
+  "alternatives": {
+   "single_node_tep": "/zai-org/GLM-5.3/strategies/single_node_tep.json",
+   "multi_node_tp": "/zai-org/GLM-5.3/strategies/multi_node_tp.json",
+   "multi_node_tp_pp": "/zai-org/GLM-5.3/strategies/multi_node_tp_pp.json",
+   "multi_node_tep": "/zai-org/GLM-5.3/strategies/multi_node_tep.json",
+   "multi_node_dep": "/zai-org/GLM-5.3/strategies/multi_node_dep.json",
+   "pd_cluster": "/zai-org/GLM-5.3/strategies/pd_cluster.json",
+   "kv_store_centralized_mooncake": "/zai-org/GLM-5.3/strategies/kv_store_centralized_mooncake.json",
+   "kv_store_distributed_mooncake": "/zai-org/GLM-5.3/strategies/kv_store_distributed_mooncake.json"
+  },
+  "by_hardware": {
+   "b300": "/zai-org/GLM-5.3/hw/b300.json",
+   "h100": "/zai-org/GLM-5.3/hw/h100.json",
+   "h200": "/zai-org/GLM-5.3/hw/h200.json",
+   "b200": "/zai-org/GLM-5.3/hw/b200.json",
+   "gb200": "/zai-org/GLM-5.3/hw/gb200.json",
+   "gb300": "/zai-org/GLM-5.3/hw/gb300.json",
+   "dgx_station_gb300": "/zai-org/GLM-5.3/hw/dgx_station_gb300.json",
+   "mi300x": "/zai-org/GLM-5.3/hw/mi300x.json",
+   "mi325x": "/zai-org/GLM-5.3/hw/mi325x.json",
+   "mi350x": "/zai-org/GLM-5.3/hw/mi350x.json",
+   "mi355x": "/zai-org/GLM-5.3/hw/mi355x.json",
+   "ascend_950pr_8x": "/zai-org/GLM-5.3/hw/ascend_950pr_8x.json"
+  }
+ },
+ "model": {
+  "model_id": "zai-org/GLM-5.3",
+  "smg_grpc": {
+   "reasoning_parser": "glm45",
+   "tool_call_parser": "glm47_moe"
+  },
+  "min_vllm_version": "0.29.0",
+  "default_frontend": "rust",
+  "docker_image": {
+   "amd": "vllm/vllm-openai-rocm:v0.29.0"
+  },
+  "architecture": "moe",
+  "parameter_count": "743B",
+  "active_parameters": "39B",
+  "context_length": 1048576,
+  "base_args": [
+   "--kv-cache-dtype",
+   "fp8_e4m3"
+  ],
+  "base_env": {},
+  "install": {
+   "pip": {
+    "command": "uv venv\nsource .venv/bin/activate\nuv pip install -U vllm --torch-backend auto"
+   },
+   "docker": {
+    "command": "docker pull vllm/vllm-openai:latest"
+   }
+  }
+ },
+ "features": {
+  "tool_calling": {
+   "description": "GLM-4.7 tool call parser with automatic tool choice",
+   "args": [
+    "--tool-call-parser",
+    "glm47",
+    "--enable-auto-tool-choice"
+   ]
+  },
+  "reasoning": {
+   "description": "Extract reasoning content with the GLM reasoning parser \u2014 thinking is always on; effort is set per request via reasoning_effort (max by default)",
+   "args": [
+    "--reasoning-parser",
+    "glm47"
+   ]
+  },
+  "spec_decoding": {
+   "description": "Speculative decoding \u2014 pick native MTP, DFlash2, or DSpark (external drafts).",
+   "default_mode": "mtp",
+   "modes": {
+    "mtp": {
+     "label": "MTP",
+     "description": "Native multi-token prediction head. 5 draft tokens on NVIDIA/AMD, 4 on DGX Station (FlashInfer TRT-LLM MoE), 1 on Ascend (draft stays eager).",
+     "args": [
+      "--speculative-config",
+      "{\"method\":\"mtp\",\"num_speculative_tokens\":5}"
+     ],
+     "hardware_overrides": {
+      "npu": {
+       "args": [
+        "--speculative-config",
+        "{\"method\":\"mtp\",\"num_speculative_tokens\":1,\"enforce_eager\":true}"
+       ]
+      },
+      "dgx_station_gb300": {
+       "args": [
+        "--speculative-config",
+        "{\"method\":\"mtp\",\"num_speculative_tokens\":4,\"moe_backend\":\"flashinfer_trtllm\"}"
+       ]
+      }
+     }
+    },
+    "dflash": {
+     "label": "DFlash2",
+     "description": "External DFlash2 drafter (incoai/GLM-5.3-DFlash2). method is dflash; DFlash2 is selected by the draft architecture. num_speculative_tokens must be 7 (block_size 8 minus one).",
+     "variants": [
+      "default"
+     ],
+     "hardware": {
+      "amd": "unsupported",
+      "npu": "unsupported"
+     },
+     "args": [
+      "--speculative-config",
+      "{\"method\":\"dflash\",\"model\":\"incoai/GLM-5.3-DFlash2\",\"num_speculative_tokens\":7}"
+     ]
+    },
+    "dspark": {
+     "label": "DSpark",
+     "description": "External DSpark drafter (RedHatAI/GLM-5.3-speculator.dspark), with a Markov head and confidence head. The model card specifies 8 draft tokens.",
+     "variants": [
+      "default"
+     ],
+     "args": [
+      "--speculative-config",
+      "{\"method\":\"dspark\",\"model\":\"RedHatAI/GLM-5.3-speculator.dspark\",\"num_speculative_tokens\":8}"
+     ]
+    }
+   }
+  }
+ },
+ "opt_in_features": [
+  "spec_decoding"
+ ],
+ "variants": {
+  "default": {
+   "precision": "fp8",
+   "vram_minimum_gb": 893,
+   "description": "Native FP8 checkpoint (zai-org/GLM-5.3) \u2014 8xH200/H20 (141GB \u00d7 8) single-node serving",
+   "hardware_overrides": {
+    "h200": {
+     "extra_args": [
+      "--max-model-len",
+      "262144"
+     ]
+    },
+    "ascend_950pr_8x": {
+     "docker_image": "quay.io/ascend/vllm-ascend:nightly-main-a5",
+     "install": {
+      "pip": false
+     }
+    }
+   }
+  },
+  "nvfp4": {
+   "model_id": "Inferact/GLM-5.3-NVFP4",
+   "precision": "nvfp4",
+   "vram_minimum_gb": 558,
+   "description": "Inferact NVFP4 checkpoint \u2014 only MoE expert linears are quantized to NVFP4; shared experts, attention, embeddings, and the early dense layers stay FP8/BF16, with FP8 KV cache. Blackwell GPUs (B200/B300) only. On DGX Station, weights CPU-offload into unified system RAM.",
+   "hardware_overrides": {
+    "dgx_station_gb300": {
+     "docker_image": "vllm/vllm-openai:v0.30.0-ubuntu2404",
+     "vram_minimum_gb": 252,
+     "extra_env": {
+      "VLLM_WEIGHT_OFFLOADING_DISABLE_PIN_MEMORY": "1",
+      "VLLM_ENGINE_READY_TIMEOUT_S": "900"
+     },
+     "extra_args": [
+      "--trust-remote-code",
+      "--gpu-memory-utilization",
+      "0.97",
+      "--max-model-len",
+      "262144",
+      "--max-num-seqs",
+      "8",
+      "--offload-backend",
+      "uva",
+      "--cpu-offload-gb",
+      "222",
+      "--cpu-offload-params",
+      "w13_weight",
+      "w2_weight",
+      "--load-format",
+      "fastsafetensors",
+      "--disable-flashinfer-autotune",
+      "--moe-backend",
+      "flashinfer_trtllm"
+     ]
+    }
+   },
+   "json": "/Inferact/GLM-5.3-NVFP4.json"
+  },
+  "w4a8": {
+   "model_id": "gpustack/GLM-5.3-W4A8",
+   "precision": "int4",
+   "label": "W4A8",
+   "vram_minimum_gb": 447,
+   "precision_hardware": {
+    "brand": "NVIDIA",
+    "generation": "hopper"
+   },
+   "supported_hardware": [
+    "h100",
+    "h200"
+   ],
+   "extra_args": [
+    "--enable-expert-parallel",
+    "--trust-remote-code"
+   ],
+   "hardware_overrides": {
+    "hopper": {
+     "extra_args": [
+      "--kv-cache-dtype",
+      "fp8_ds_mla"
+     ]
+    }
+   },
+   "description": "GPUStack Hopper-native W4A8 (gpustack/GLM-5.3-W4A8). Routed experts are INT4 group-128; non-expert layers stay FP8. Weights drop from 704 GB to 372 GB, roughly doubling KV cache on 8\u00d7H200/H20 with no measurable accuracy drop vs official FP8. CUTLASS W4A8 is SM90-only \u2014 H100/H200/H20; Blackwell and AMD are unsupported.",
+   "json": "/gpustack/GLM-5.3-W4A8.json"
+  },
+  "bf16": {
+   "model_id": "zai-org/GLM-5.3-BF16",
+   "precision": "bf16",
+   "vram_minimum_gb": 1786,
+   "description": "Full precision BF16 \u2014 requires multi-node deployment",
+   "json": "/zai-org/GLM-5.3-BF16.json"
+  }
+ },
+ "strategy_hardware": {
+  "single_node_tep": {
+   "npu": "unsupported"
+  },
+  "multi_node_tp": {
+   "npu": "unsupported"
+  },
+  "multi_node_tp_pp": {
+   "npu": "unsupported"
+  },
+  "multi_node_tep": {
+   "npu": "unsupported"
+  },
+  "multi_node_dep": {
+   "npu": "unsupported"
+  },
+  "pd_cluster": {
+   "npu": "unsupported"
+  }
+ },
+ "hardware_overrides": {
+  "hopper": {
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ]
+  },
+  "amd": {
+   "extra_args": [
+    "--linear-backend",
+    "aiter",
+    "--moe-backend",
+    "aiter"
+   ],
+   "extra_env": {
+    "VLLM_ROCM_USE_AITER": "1",
+    "VLLM_ROCM_USE_AITER_FUSION_SHARED_EXPERTS": "1"
+   }
+  },
+  "npu": {
+   "extra_args": [
+    "--trust-remote-code",
+    "--kv-cache-dtype",
+    "auto",
+    "--block-size",
+    "512",
+    "--max-model-len",
+    "131072",
+    "--max-num-seqs",
+    "16",
+    "--gpu-memory-utilization",
+    "0.9"
+   ],
+   "extra_env": {
+    "PYTORCH_NPU_ALLOC_CONF": "expandable_segments:True",
+    "OMP_PROC_BIND": "false",
+    "OMP_NUM_THREADS": "1",
+    "TASK_QUEUE_ENABLE": "1",
+    "HCCL_BUFFSIZE": "1024",
+    "HCCL_OP_EXPANSION_MODE": "AIV"
+   }
+  }
+ },
+ "hardware_notes": {
+  "ascend_950pr_8x": {
+   "title": "vLLM Ascend A5 image required",
+   "body": "Single-node TP8 on 8\u00d7950PR. Pin quay.io/ascend/vllm-ascend:nightly-main-a5 and overlay vllm-ascend#15346 for native FP8. EP is not available on this interconnect. Set HCCL_BUFFSIZE=1024 before launch."
+  },
+  "dgx_station_gb300": {
+   "title": "CPU weight offload (NVFP4)",
+   "body": "1\u00d7 GB300 (252 GB HBM) plus unified host RAM. NVFP4 offloads MoE expert weights (w13_weight, w2_weight) with --offload-backend uva and --cpu-offload-gb 222. Set VLLM_WEIGHT_OFFLOADING_DISABLE_PIN_MEMORY=1. Context is capped at 262K / 8 seqs. FP8/BF16 still do not fit this box."
+  }
+ },
+ "guide": "## Overview\n\n**GLM-5.3** is the newest model in the GLM-5 series \u2014 a ~743B-parameter MoE (39B active) from **Z-AI**.\nArchitecture and serving flags are identical to GLM-5.2; the packaging change is that the\n**default `zai-org/GLM-5.3` checkpoint is now native FP8** \u2014 BF16 weights live under the suffixed `zai-org/GLM-5.3-BF16` repo.\n\nThe FP8 checkpoint fits on a single 8xH200 / 8xH20 node and \u2014 with FP8 KV cache \u2014 reaches the full 1M-token context on 8xB200.\nAn NVFP4 checkpoint for Blackwell is published by Inferact (`Inferact/GLM-5.3-NVFP4`).\n\n## Prerequisites\n\n- **vLLM 0.28.0** or newer.\n- **GPU:** 8xH200 or 8xH20 (141 GB each) for single-node FP8; 8xB200 (180 GB each) for the full 1M context.\n\n## Installation\n\n```bash\nuv venv\nsource .venv/bin/activate\nuv pip install \"vllm==0.28.0\" --torch-backend=auto\nuv pip install \"transformers>=5.15.0\"\n```\n\n## Launching the server\n\n### FP8 on 8xH200 (standard)\n\n```bash\nvllm serve zai-org/GLM-5.3 \\\n  --kv-cache-dtype fp8 \\\n  --tensor-parallel-size 8 \\\n  --speculative-config.method mtp \\\n  --speculative-config.num_speculative_tokens 5 \\\n  --tool-call-parser glm47 \\\n  --reasoning-parser glm47 \\\n  --enable-auto-tool-choice \\\n  --served-model-name glm-5.3\n```\n\n### FP8 on AMD MI300X/MI325X/MI350X/MI355X\n\n```bash\nVLLM_ROCM_USE_AITER=1 \\\nVLLM_ROCM_USE_AITER_FUSION_SHARED_EXPERTS=1 \\\nvllm serve zai-org/GLM-5.3 \\\n  --kv-cache-dtype fp8_e4m3 \\\n  --tensor-parallel-size 8 \\\n  --speculative-config.method mtp \\\n  --speculative-config.num_speculative_tokens 5 \\\n  --tool-call-parser glm47 \\\n  --enable-auto-tool-choice \\\n  --reasoning-parser glm47 \\\n  --gpu-memory-utilization 0.80 \\\n  --max-model-len 524288 \\\n  --max-num-seqs 32 \\\n  --linear-backend aiter \\\n  --moe-backend aiter\n```\n\nOn 8x MI325X with `vllm/vllm-openai-rocm:v0.29.0`, this command serves the full\n`--max-model-len 524288` at `--gpu-memory-utilization 0.80`, reporting a 1,477,168-token\nKV cache and 2.82x maximum concurrency. MTP is healthy there: a mean acceptance length of\n2.77 with 5 tokens drafted per step on a ~500-token greedy generation.\n\nOn 8x MI350X with the same image and settings, it reports a 2,013,072-token KV cache and\n3.84x maximum concurrency, and MTP's mean acceptance length is 3.19 with 5 tokens drafted\nper step on a 512-token greedy generation.\n\n### FP8 on 8xB200 (full 1M context)\n\nGLM-5.3 has a native 1M-token window. Whether the full window fits is a KV-cache VRAM\nquestion, so the lever is `--max-num-seqs` \u2014 it bounds how many sequences share the KV\nbudget at once. **Start at 32** and scale with your node's VRAM. FP8 KV cache\n(`--kv-cache-dtype fp8_e4m3`, already in the base flags) roughly halves that budget.\n\n```bash\nvllm serve zai-org/GLM-5.3 \\\n  --kv-cache-dtype fp8_e4m3 \\\n  --tensor-parallel-size 8 \\\n  --speculative-config.method mtp \\\n  --speculative-config.num_speculative_tokens 5 \\\n  --max-num-seqs 32 \\\n  --tool-call-parser glm47 \\\n  --reasoning-parser glm47 \\\n  --enable-auto-tool-choice \\\n  --served-model-name glm-5.3\n```\n\n- **`--max-num-seqs 32`** \u2014 the single knob for fitting 1M context; start at 32 and tune it\n  to your VRAM (up on headroom, down on OOM).\n- **BF16** weights are served from `zai-org/GLM-5.3-BF16` and need multi-node deployment.\n\n### NVFP4 on Blackwell (B200/B300)\n\nThe `Inferact/GLM-5.3-NVFP4` variant is Inferact's NVFP4 re-quantization : only the MoE expert linears drop to NVFP4 while shared experts,\nattention, embeddings, and the early dense layers stay BF16. The ~465 GB checkpoint fits comfortably on Blackwell\nSelect the **NVFP4** variant above (Blackwell-only) or run:\n\n```bash\nvllm serve Inferact/GLM-5.3-NVFP4 \\\n  --tensor-parallel-size 8 \\\n  --enable-expert-parallel \\\n  --reasoning-parser glm47 \\\n  --tool-call-parser glm47 \\\n  --enable-auto-tool-choice \\\n  --kv-cache-dtype fp8_e4m3 \\\n  --served-model-name glm-5.3-nvfp4\n```\n\n### DSpark (opt-in)\n\nDSpark is an external confidence-scheduled drafter. Serve `zai-org/GLM-5.3` and attach\n[RedHatAI/GLM-5.3-speculator.dspark](https://huggingface.co/RedHatAI/GLM-5.3-speculator.dspark)\nwith eight speculative tokens:\n\n```bash\nvllm serve zai-org/GLM-5.3 \\\n  --tensor-parallel-size 8 \\\n  --speculative-config '{\"method\":\"dspark\",\"model\":\"RedHatAI/GLM-5.3-speculator.dspark\",\"num_speculative_tokens\":8}'\n```\n\n## Reasoning modes\n\nThinking is always on \u2014 the generation prompt opens a `<think>` block unconditionally.\nGLM-5.3 offers **three reasoning effort levels** driven by the `reasoning_effort`\nfield; the default is **`max`**:\n\n| Mode | How to request | Behavior |\n|------|----------------|----------|\n| **Think Max** (default) | omit `reasoning_effort`, or set `\"max\"` | Deepest reasoning \u2014 hard math, multi-step planning, agentic tasks. Highest token cost. |\n| **Think High** | `\"reasoning_effort\": \"high\"` | Balanced depth and latency. |\n| **Think Low** | `\"reasoning_effort\": \"low\"` | Lightest reasoning \u2014 simple Q&A, lowest latency and token cost. |\n\nThe chat template resolves effort to **`max` unless `reasoning_effort` is explicitly\n`\"low\"` or `\"high\"`** (any other value falls back to `max`), then injects\n`Reasoning Effort: Low|High|Max` into the system prompt. Pass it through\n`chat_template_kwargs` or the top-level OpenAI `reasoning_effort` field.\n\n```python\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=\"EMPTY\", base_url=\"http://localhost:8000/v1\")\nmsgs = [{\"role\": \"user\", \"content\": \"Summarize GLM-5.3 in one sentence.\"}]\n\n# Think Max (default) \u2014 just omit reasoning_effort\nclient.chat.completions.create(model=\"glm-5.3\", messages=msgs, max_tokens=4096)\n\n# Think High / Think Low \u2014 explicitly request the effort level\nclient.chat.completions.create(\n    model=\"glm-5.3\",\n    messages=msgs,\n    max_tokens=4096,\n    extra_body={\"chat_template_kwargs\": {\"reasoning_effort\": \"low\"}},\n)\n```\n\n```bash\ncurl http://localhost:8000/v1/chat/completions \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\n    \"model\": \"glm-5.3\",\n    \"messages\": [{\"role\": \"user\", \"content\": \"Summarize GLM-5.3 in one sentence.\"}],\n    \"temperature\": 1,\n    \"max_tokens\": 4096,\n    \"chat_template_kwargs\": {\"reasoning_effort\": \"high\"}\n  }'\n```\n\n## Client usage\n\n```python\nfrom openai import OpenAI\n\nclient = OpenAI(api_key=\"EMPTY\", base_url=\"http://localhost:8000/v1\")\nresponse = client.chat.completions.create(\n    model=\"glm-5.3\",\n    messages=[{\"role\": \"user\", \"content\": \"Summarize GLM-5.3 in one sentence.\"}],\n    temperature=1.0,\n    max_tokens=256,\n)\nprint(response.choices[0].message.content)\n```\n\n## Benchmarking\n\nAdd `--no-enable-prefix-caching` to the server command for a clean measurement.\n\n```bash\nvllm bench serve \\\n  --model zai-org/GLM-5.3 \\\n  --dataset-name random \\\n  --random-input-len 8000 \\\n  --random-output-len 1024 \\\n  --request-rate 10 \\\n  --num-prompts 32 \\\n  --ignore-eos\n```\n\n> **Note:** pure throughput benchmarks tend to under-report real speed, because MTP's\n> acceptance rate is usually low in synthetic runs.\n\n## Troubleshooting\n\n- **FP8 performance:** DeepGEMM is required \u2014 install via `install_deepgemm.sh`.\n\n## References\n\n- [Model card](https://huggingface.co/zai-org/GLM-5.3)\n- [BF16 checkpoint](https://huggingface.co/zai-org/GLM-5.3-BF16)\n- [NVFP4 checkpoint (Inferact)](https://huggingface.co/Inferact/GLM-5.3-NVFP4)\n- [DSpark draft](https://huggingface.co/RedHatAI/GLM-5.3-speculator.dspark)\n",
+ "source": {
+  "source": "vllm",
+  "repo": "vllm-project/vllm",
+  "ref": "main",
+  "sha": "109669cfb314d807f7e5fa474dcd03abfca8cbd4",
+  "path": "recipes/models/zai-org/GLM-5.3.yaml",
+  "edit_url": "https://github.com/vllm-project/vllm/edit/main/recipes/models/zai-org/GLM-5.3.yaml",
+  "overlays": []
+ }
+}

@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Getting started
+    url: https://github.com/hohieuai/colab-vllm-server#get-started
+    about: Set up colab-vllm-server and send a first request, step by step
+  - name: Troubleshooting
+    url: https://github.com/hohieuai/colab-vllm-server/blob/main/docs/troubleshooting.md
+    about: Fixes for common errors
+  - name: vLLM issues
+    url: https://github.com/vllm-project/vllm/issues
+    about: Problems inside the vLLM server itself
+  - name: Colab CLI discussions
+    url: https://github.com/googlecolab/google-colab-cli/discussions
+    about: Problems with the colab command

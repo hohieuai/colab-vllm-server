@@ -1,0 +1,46 @@
+name: Model or GPU request
+description: Ask for a preset for a model, or support for a Colab GPU
+title: "[Preset] "
+labels:
+  - preset
+body:
+  - type: markdown
+    attributes:
+      value: |
+        colab-vllm-server builds each command from the model's recipe on [vLLM Recipes](https://recipes.vllm.ai). A model without a recipe can't get a preset. You can also add a preset yourself, as [Add a deployment](https://github.com/hohieuai/colab-vllm-server/blob/main/docs/guides/add-a-deployment.md) describes.
+
+  - type: input
+    id: recipe
+    attributes:
+      label: Recipe
+      description: The model's page on recipes.vllm.ai.
+      placeholder: https://recipes.vllm.ai/openai/gpt-oss-120b
+    validations:
+      required: true
+
+  - type: dropdown
+    id: gpu
+    attributes:
+      label: Colab GPU
+      options:
+        - A100 80 GB
+        - A100 40 GB
+        - H100
+        - G4 (RTX PRO 6000)
+        - L4
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: resolve
+    attributes:
+      label: Resolver output
+      description: If you tried a preset, paste the output of `uv run serve resolve <preset>`.
+      render: shell
+
+  - type: textarea
+    id: use
+    attributes:
+      label: What you will use it for
+      description: The features you need, such as tool calls, structured outputs, or a long context.
