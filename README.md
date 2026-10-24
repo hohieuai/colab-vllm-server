@@ -24,23 +24,25 @@ One command, `serve`, does each step:
 - **chat** sends a message and prints the answer, as a quick test.
 - **down** stops the server and releases the VM.
 
-The deployments are the files in [`presets/`](presets). Every preset is configured for the highest
-output quality: full-precision or released-format weights, a BF16 KV cache, and the highest
-reasoning effort the server can set.
+Each deployment is a preset in [`presets/`](presets), configured for the highest output quality:
+full-precision or released-format weights, a BF16 KV cache, and the highest reasoning effort the
+server can set. The server listens only on the VM's loopback interface, so your computer reaches it
+through the tunnel and nothing else can.
 
-A running endpoint uses Colab compute units every hour until you run `serve down`, whether you
-send it requests or not.
-
-The server listens only on the VM's loopback interface. Your computer reaches it through the
-tunnel, and nothing else can.
+> [!IMPORTANT]
+> A running endpoint uses Colab compute units every hour until you run `serve down`, even when it
+> receives no requests.
 
 ## Install and start
 
-Before you start, install [uv](https://docs.astral.sh/uv/) and the
-[`colab` CLI](https://pypi.org/project/google-colab-cli/) 0.7.5 or later
-(`uv tool install google-colab-cli`), and sign in to it by running `colab sessions` once. You also
-need an `ed25519` SSH key in `~/.ssh`, and Colab compute units. The A100 80 GB used below is the
-High-RAM machine shape, which needs Colab Pro or Pro+.
+Before you start, you need:
+
+- [uv](https://docs.astral.sh/uv/)
+- The [`colab` CLI](https://pypi.org/project/google-colab-cli/) 0.7.5 or later, installed with
+  `uv tool install google-colab-cli` and signed in once with `colab sessions`
+- An `ed25519` SSH key in `~/.ssh`
+- Colab compute units. The A100 80 GB used below is the High-RAM machine shape, which needs Colab
+  Pro or Pro+.
 
 1. Download colab-vllm-server:
 
