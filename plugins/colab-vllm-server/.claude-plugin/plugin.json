@@ -1,0 +1,12 @@
+{
+  "name": "colab-vllm-server",
+  "version": "0.1.0",
+  "description": "Start, test, use, and stop a vLLM endpoint on a Colab GPU with the serve command, without leaving a VM running by mistake",
+  "author": {
+    "name": "The colab-vllm-server Authors"
+  },
+  "homepage": "https://github.com/hohieuai/colab-vllm-server",
+  "repository": "https://github.com/hohieuai/colab-vllm-server",
+  "license": "Apache-2.0",
+  "keywords": ["vllm", "colab", "openai", "inference", "gpu"]
+}

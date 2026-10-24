@@ -1,0 +1,59 @@
+# Colab GPUs and the vLLM Recipes hardware profile each one uses.
+#
+# Fields
+#   accelerator   Value for `colab new --gpu`. Defaults to the entry's key.
+#   high_mem      Pass `--high-mem`. On Colab, the A100 High-RAM shape is the
+#                 80 GB card (A100-SXM4-80GB, 167 GB RAM). The standard shape
+#                 is the 40 GB card. Verified 2026-10-24.
+#   recipe_hw     Profile id from vllm-project/recipes taxonomy.yaml whose
+#                 rendered command is used. Colab gives one GPU, so the
+#                 resolver always sets --tensor-parallel-size 1.
+#   exact         true when the profile is the same chip as the Colab GPU.
+#   generation    GPU generation. Recipes key hardware overrides by generation
+#                 (hopper, blackwell, ada). When it differs from the profile's
+#                 generation, the resolver removes the profile's
+#                 generation-specific and chip-specific settings and applies
+#                 the ones for this generation, falling back to the
+#                 brand-wide nvidia block.
+#   vram_gb       Memory per GPU, used by the pre-flight fit check. The launch
+#                 script checks it again with nvidia-smi.
+#   compute_arch  CUDA compute capability, used for precision checks. NVFP4
+#                 needs sm100 or newer. Native FP8 needs sm89 or newer.
+#
+# The taxonomy has no Ampere or L4 profile, and only one recipe renders the
+# Ada profile l40s. A100 and L4 therefore borrow the h100 render, adapted as
+# described under `generation`.
+
+gpus:
+  G4:
+    recipe_hw: rtx_pro_6000
+    exact: true
+    generation: blackwell
+    vram_gb: 96
+    compute_arch: sm120
+  H100:
+    recipe_hw: h100
+    exact: true
+    generation: hopper
+    vram_gb: 80
+    compute_arch: sm90
+  A100_80G:
+    accelerator: A100
+    high_mem: true
+    recipe_hw: h100
+    exact: false
+    generation: ampere
+    vram_gb: 80
+    compute_arch: sm80
+  A100:
+    recipe_hw: h100
+    exact: false
+    generation: ampere
+    vram_gb: 40
+    compute_arch: sm80
+  L4:
+    recipe_hw: h100
+    exact: false
+    generation: ada
+    vram_gb: 24
+    compute_arch: sm89

@@ -1,0 +1,281 @@
+{
+ "hf_id": "MiniMaxAI/MiniMax-M2.5",
+ "meta": {
+  "title": "MiniMax-M2.5",
+  "slug": "minimax-m2.5",
+  "provider": "MiniMax",
+  "description": "MiniMax M2.5 MoE language model (230B total / 10B active) for coding, agent toolchains, and long-context reasoning \u2014 native FP8 checkpoint",
+  "date_added": "2026-02-13",
+  "date_updated": "2026-09-14",
+  "tasks": [
+   "text"
+  ],
+  "performance_headline": "Refreshed M2 series MoE with strong SWE-Bench and Terminal-Bench performance, 196K context",
+  "related_recipes": [],
+  "hardware": {
+   "h100": "verified",
+   "h200": "verified",
+   "mi300x": "verified",
+   "mi325x": "verified",
+   "mi355x": "verified"
+  }
+ },
+ "recommended_command": {
+  "hardware": "h200",
+  "strategy": "single_node_tp",
+  "variant": "default",
+  "node_count": 1,
+  "deploy_type": "single_node",
+  "env": {
+   "PYTHONNOUSERSITE": "1",
+   "VLLM_USE_DEEP_GEMM": "0",
+   "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER": "0",
+   "VLLM_FLOAT32_MATMUL_PRECISION": "high",
+   "VLLM_USE_RUST_FRONTEND": "1"
+  },
+  "docker_image": "vllm/vllm-openai:v0.28.0",
+  "command": "vllm serve MiniMaxAI/MiniMax-M2.5 \\\n  --trust-remote-code \\\n  --tensor-parallel-size 4 \\\n  --compilation-config '{\"cudagraph_mode\":\"PIECEWISE\"}' \\\n  --max-num-seqs 512 \\\n  --max-num-batched-tokens 32768 \\\n  --kv-cache-dtype fp8 \\\n  --moe-backend triton \\\n  --attention-backend FLASHINFER \\\n  --enable-flashinfer-autotune \\\n  --tool-call-parser minimax_m2 \\\n  --enable-auto-tool-choice \\\n  --reasoning-parser minimax_m2",
+  "argv": [
+   "vllm",
+   "serve",
+   "MiniMaxAI/MiniMax-M2.5",
+   "--trust-remote-code",
+   "--tensor-parallel-size",
+   "4",
+   "--compilation-config",
+   "{\"cudagraph_mode\":\"PIECEWISE\"}",
+   "--max-num-seqs",
+   "512",
+   "--max-num-batched-tokens",
+   "32768",
+   "--kv-cache-dtype",
+   "fp8",
+   "--moe-backend",
+   "triton",
+   "--attention-backend",
+   "FLASHINFER",
+   "--enable-flashinfer-autotune",
+   "--tool-call-parser",
+   "minimax_m2",
+   "--enable-auto-tool-choice",
+   "--reasoning-parser",
+   "minimax_m2"
+  ],
+  "docker_command": "docker run --gpus all \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  -e PYTHONNOUSERSITE=1 \\\n  -e VLLM_USE_DEEP_GEMM=0 \\\n  -e VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER=0 \\\n  -e VLLM_FLOAT32_MATMUL_PRECISION=high \\\n  -e VLLM_USE_RUST_FRONTEND=1 \\\n  vllm/vllm-openai:v0.28.0 MiniMaxAI/MiniMax-M2.5 \\\n  --trust-remote-code \\\n  --tensor-parallel-size 4 \\\n  --compilation-config '{\"cudagraph_mode\":\"PIECEWISE\"}' \\\n  --max-num-seqs 512 \\\n  --max-num-batched-tokens 32768 \\\n  --kv-cache-dtype fp8 \\\n  --moe-backend triton \\\n  --attention-backend FLASHINFER \\\n  --enable-flashinfer-autotune \\\n  --tool-call-parser minimax_m2 \\\n  --enable-auto-tool-choice \\\n  --reasoning-parser minimax_m2",
+  "docker_argv": [
+   "docker",
+   "run",
+   "--gpus",
+   "all",
+   "--privileged",
+   "--ipc=host",
+   "-p",
+   "8000:8000",
+   "-v",
+   "~/.cache/huggingface:/root/.cache/huggingface",
+   "-e",
+   "PYTHONNOUSERSITE=1",
+   "-e",
+   "VLLM_USE_DEEP_GEMM=0",
+   "-e",
+   "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER=0",
+   "-e",
+   "VLLM_FLOAT32_MATMUL_PRECISION=high",
+   "-e",
+   "VLLM_USE_RUST_FRONTEND=1",
+   "vllm/vllm-openai:v0.28.0",
+   "MiniMaxAI/MiniMax-M2.5",
+   "--trust-remote-code",
+   "--tensor-parallel-size",
+   "4",
+   "--compilation-config",
+   "{\"cudagraph_mode\":\"PIECEWISE\"}",
+   "--max-num-seqs",
+   "512",
+   "--max-num-batched-tokens",
+   "32768",
+   "--kv-cache-dtype",
+   "fp8",
+   "--moe-backend",
+   "triton",
+   "--attention-backend",
+   "FLASHINFER",
+   "--enable-flashinfer-autotune",
+   "--tool-call-parser",
+   "minimax_m2",
+   "--enable-auto-tool-choice",
+   "--reasoning-parser",
+   "minimax_m2"
+  ],
+  "strategy_spec": {
+   "name": "single_node_tp",
+   "deploy_type": "single_node",
+   "display_name": "Tensor Parallel",
+   "orientation": "latency",
+   "description": "Single-node tensor parallel. Splits the model across all local GPUs. TP size is set to the GPU count at deploy time. The simplest multi-GPU strategy \u2014 works for all model architectures.\n",
+   "hardware_match": {
+    "min_gpus": 1,
+    "max_gpus": 8,
+    "multi_node": false
+   },
+   "vllm_args": [],
+   "parallel_flag": "--tensor-parallel-size"
+  },
+  "hardware_profile": {
+   "brand": "NVIDIA",
+   "generation": "hopper",
+   "compute_arch": "sm90",
+   "display_name": "H200",
+   "description": "NVIDIA H200 SXM 141 GB HBM3e \u00b7 8-GPU HGX node",
+   "gpu_count": 8,
+   "vram_gb": 1128,
+   "multi_node": false
+  },
+  "alternatives": {
+   "single_node_tep": "/MiniMaxAI/MiniMax-M2.5/strategies/single_node_tep.json",
+   "single_node_dep": "/MiniMaxAI/MiniMax-M2.5/strategies/single_node_dep.json",
+   "multi_node_tp": "/MiniMaxAI/MiniMax-M2.5/strategies/multi_node_tp.json",
+   "multi_node_tp_pp": "/MiniMaxAI/MiniMax-M2.5/strategies/multi_node_tp_pp.json",
+   "multi_node_tep": "/MiniMaxAI/MiniMax-M2.5/strategies/multi_node_tep.json",
+   "multi_node_dep": "/MiniMaxAI/MiniMax-M2.5/strategies/multi_node_dep.json",
+   "pd_cluster": "/MiniMaxAI/MiniMax-M2.5/strategies/pd_cluster.json",
+   "kv_store_centralized_mooncake": "/MiniMaxAI/MiniMax-M2.5/strategies/kv_store_centralized_mooncake.json",
+   "kv_store_distributed_mooncake": "/MiniMaxAI/MiniMax-M2.5/strategies/kv_store_distributed_mooncake.json"
+  },
+  "by_hardware": {
+   "h200": "/MiniMaxAI/MiniMax-M2.5/hw/h200.json",
+   "h100": "/MiniMaxAI/MiniMax-M2.5/hw/h100.json",
+   "b200": "/MiniMaxAI/MiniMax-M2.5/hw/b200.json",
+   "gb200": "/MiniMaxAI/MiniMax-M2.5/hw/gb200.json",
+   "b300": "/MiniMaxAI/MiniMax-M2.5/hw/b300.json",
+   "gb300": "/MiniMaxAI/MiniMax-M2.5/hw/gb300.json",
+   "mi300x": "/MiniMaxAI/MiniMax-M2.5/hw/mi300x.json",
+   "mi325x": "/MiniMaxAI/MiniMax-M2.5/hw/mi325x.json",
+   "mi350x": "/MiniMaxAI/MiniMax-M2.5/hw/mi350x.json",
+   "mi355x": "/MiniMaxAI/MiniMax-M2.5/hw/mi355x.json"
+  }
+ },
+ "model": {
+  "model_id": "MiniMaxAI/MiniMax-M2.5",
+  "min_vllm_version": "0.20.2",
+  "default_frontend": "rust",
+  "docker_image": "vllm/vllm-openai:v0.28.0",
+  "architecture": "moe",
+  "parameter_count": "230B",
+  "active_parameters": "10B",
+  "context_length": 196608,
+  "base_args": [
+   "--trust-remote-code"
+  ],
+  "base_env": {},
+  "install": {
+   "pip": {
+    "command": "uv venv\nsource .venv/bin/activate\nuv pip install -U vllm --torch-backend auto"
+   },
+   "docker": {
+    "command": "docker pull vllm/vllm-openai:v0.28.0"
+   }
+  }
+ },
+ "features": {
+  "tool_calling": {
+   "description": "MiniMax M2 tool call parser with automatic tool choice",
+   "args": [
+    "--tool-call-parser",
+    "minimax_m2",
+    "--enable-auto-tool-choice"
+   ]
+  },
+  "reasoning": {
+   "description": "MiniMax M2 reasoning parser for chain-of-thought extraction",
+   "args": [
+    "--reasoning-parser",
+    "minimax_m2"
+   ]
+  }
+ },
+ "opt_in_features": [],
+ "variants": {
+  "default": {
+   "precision": "fp8",
+   "vram_minimum_gb": 276,
+   "description": "Native FP8 checkpoint \u2014 4x H200/H20/H100 or 4x A100/A800 for weights, plus KV cache headroom"
+  },
+  "nvfp4": {
+   "model_id": "nvidia/MiniMax-M2.5-NVFP4",
+   "precision": "nvfp4",
+   "vram_minimum_gb": 138,
+   "description": "NVIDIA NVFP4 quantized weights for Blackwell GPUs",
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "json": "/nvidia/MiniMax-M2.5-NVFP4.json"
+  },
+  "redhat_nvfp4": {
+   "model_id": "RedHatAI/MiniMax-M2.5-NVFP4",
+   "precision": "nvfp4",
+   "label": "NVFP4 (RedHat)",
+   "vram_minimum_gb": 146,
+   "description": "RedHatAI NVFP4 quantization",
+   "json": "/RedHatAI/MiniMax-M2.5-NVFP4.json"
+  }
+ },
+ "kv_offload_support": {
+  "offloading_cpu": "verified",
+  "offloading_fs": "verified"
+ },
+ "hardware_overrides": {
+  "nvidia": {
+   "extra_args": [
+    "--compilation-config",
+    "{\"cudagraph_mode\":\"PIECEWISE\"}"
+   ]
+  },
+  "hopper": {
+   "extra_args": [
+    "--compilation-config",
+    "{\"cudagraph_mode\":\"PIECEWISE\"}",
+    "--max-num-seqs",
+    "512",
+    "--max-num-batched-tokens",
+    "32768",
+    "--kv-cache-dtype",
+    "fp8",
+    "--moe-backend",
+    "triton",
+    "--attention-backend",
+    "FLASHINFER",
+    "--enable-flashinfer-autotune"
+   ],
+   "extra_env": {
+    "PYTHONNOUSERSITE": "1",
+    "VLLM_USE_DEEP_GEMM": "0",
+    "VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER": "0",
+    "VLLM_FLOAT32_MATMUL_PRECISION": "high"
+   }
+  },
+  "amd": {
+   "extra_args": [
+    "--tensor-parallel-size",
+    "2",
+    "--attention-backend",
+    "ROCM_AITER_FA"
+   ],
+   "extra_env": {
+    "VLLM_ROCM_USE_AITER": "1",
+    "VLLM_ROCM_SHUFFLE_KV_CACHE_LAYOUT": "1"
+   }
+  }
+ },
+ "guide": "## Overview\n\n[MiniMax-M2.5](https://huggingface.co/MiniMaxAI/MiniMax-M2.5) is part of the MiniMax\nM2 series of advanced MoE language models. It retains the M2 architecture (10B active,\n230B total) and a 196K context per sequence.\n\n## Prerequisites\n\n- **OS:** Linux\n- **Python:** 3.10 - 3.13\n- **NVIDIA:** compute capability >= 7.0; ~220 GB for weights + 240 GB per 1M context tokens\n- **AMD:** MI300X / MI325X / MI350X / MI355X with ROCm 7.0+\n\n### Install vLLM (NVIDIA)\n\n```bash\nuv venv\nsource .venv/bin/activate\nuv pip install -U vllm --torch-backend auto\n```\n\n### Docker (dedicated M2-series image)\n\n```bash\ndocker run --gpus all \\\n  -p 8000:8000 \\\n  --ipc=host \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  -e PYTHONNOUSERSITE=1 \\\n  -e VLLM_USE_DEEP_GEMM=0 \\\n  -e VLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER=0 \\\n  -e VLLM_FLOAT32_MATMUL_PRECISION=high \\\n  vllm/vllm-openai:v0.28.0 MiniMaxAI/MiniMax-M2.5 \\\n      --tensor-parallel-size 4 \\\n      --max-num-seqs 512 \\\n      --max-num-batched-tokens 32768 \\\n      --kv-cache-dtype fp8 \\\n      --moe-backend triton \\\n      --attention-backend FLASHINFER \\\n      --enable-flashinfer-autotune \\\n      --tool-call-parser minimax_m2 \\\n      --reasoning-parser minimax_m2 \\\n      --enable-auto-tool-choice \\\n      --compilation-config '{\"cudagraph_mode\":\"PIECEWISE\"}' \\\n      --trust-remote-code\n```\n\n## Launching the Server\n\n### NVIDIA H200 \u2014 TP4\n\n```bash\nPYTHONNOUSERSITE=1 \\\nVLLM_USE_DEEP_GEMM=0 \\\nVLLM_BLOCKSCALE_FP8_GEMM_FLASHINFER=0 \\\nVLLM_FLOAT32_MATMUL_PRECISION=high \\\nvllm serve MiniMaxAI/MiniMax-M2.5 \\\n  --tensor-parallel-size 4 \\\n  --max-num-seqs 512 \\\n  --max-num-batched-tokens 32768 \\\n  --kv-cache-dtype fp8 \\\n  --moe-backend triton \\\n  --attention-backend FLASHINFER \\\n  --enable-flashinfer-autotune \\\n  --tool-call-parser minimax_m2 \\\n  --reasoning-parser minimax_m2 \\\n  --compilation-config '{\"cudagraph_mode\":\"PIECEWISE\"}' \\\n  --enable-auto-tool-choice \\\n  --trust-remote-code\n```\n\nFor H200 FP8, choose the attention backend by sequence length for best performance:\nshorter sequences (e.g. 1024) should keep the command above with `--attention-backend FLASHINFER`\nand `--enable-flashinfer-autotune`, while longer input sequences (e.g. 8192)\nshould remove those flags to use the auto-selected FlashAttention backend.\n\nPure TP8 is not supported. For >4 GPUs use DP+EP or TP+EP.\n\n### TP4+EP (recommended for H100)\n\n```bash\nvllm serve MiniMaxAI/MiniMax-M2.5 \\\n  --tensor-parallel-size 4 \\\n  --enable-expert-parallel \\\n  --tool-call-parser minimax_m2 \\\n  --reasoning-parser minimax_m2 \\\n  --compilation-config '{\"cudagraph_mode\":\"PIECEWISE\"}' \\\n  --enable-auto-tool-choice\n```\n\n### AMD ROCm \u2014 TP2\n\n```bash\nVLLM_ROCM_USE_AITER=1 vllm serve MiniMaxAI/MiniMax-M2.5 \\\n  --tensor-parallel-size 2 \\\n  --tool-call-parser minimax_m2 \\\n  --reasoning-parser minimax_m2 \\\n  --enable-auto-tool-choice \\\n  --trust-remote-code\n```\n\n## Benchmarking\n\n```bash\nvllm bench serve \\\n  --backend vllm \\\n  --model MiniMaxAI/MiniMax-M2.5 \\\n  --endpoint /v1/completions \\\n  --dataset-name random \\\n  --random-input 2048 \\\n  --random-output 1024 \\\n  --max-concurrency 10 \\\n  --num-prompt 100\n```\n\n## Troubleshooting\n\n- See [MiniMax-M2](./MiniMax-M2.yaml) for shared troubleshooting notes\n  (latest vLLM fusion behavior, nightly vs stable, DeepGEMM, AITER).\n\n## References\n\n- [Model card](https://huggingface.co/MiniMaxAI/MiniMax-M2.5)\n- [MiniMax](https://www.minimax.io/)\n",
+ "source": {
+  "source": "vllm",
+  "repo": "vllm-project/vllm",
+  "ref": "main",
+  "sha": "109669cfb314d807f7e5fa474dcd03abfca8cbd4",
+  "path": "recipes/models/MiniMaxAI/MiniMax-M2.5.yaml",
+  "edit_url": "https://github.com/vllm-project/vllm/edit/main/recipes/models/MiniMaxAI/MiniMax-M2.5.yaml",
+  "overlays": []
+ }
+}

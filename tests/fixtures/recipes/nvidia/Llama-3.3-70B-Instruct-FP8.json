@@ -1,0 +1,225 @@
+{
+ "hf_id": "nvidia/Llama-3.3-70B-Instruct-FP8",
+ "meta": {
+  "title": "Llama-3.3-70B",
+  "slug": "llama3.3-70b",
+  "provider": "Meta",
+  "description": "Llama 3.3 70B dense model with NVIDIA FP8/FP4 quantized variants for Hopper and Blackwell GPUs",
+  "date_added": "2025-08-06",
+  "date_updated": "2026-09-22",
+  "tasks": [
+   "text"
+  ],
+  "performance_headline": "",
+  "related_recipes": [
+   "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+  ],
+  "hardware": {
+   "h100": "verified",
+   "h200": "verified",
+   "b200": "verified",
+   "gb200": "verified",
+   "mi300x": "verified",
+   "mi325x": "verified",
+   "mi355x": "verified",
+   "trillium": "verified",
+   "xeon6": "verified",
+   "arc_pro_b70": "verified"
+  },
+  "derived_from": "meta-llama/Llama-3.3-70B-Instruct",
+  "variant": "fp8"
+ },
+ "recommended_command": {
+  "hardware": "h200",
+  "strategy": "single_node_tp",
+  "variant": "fp8",
+  "node_count": 1,
+  "deploy_type": "single_node",
+  "env": {},
+  "docker_image": "vllm/vllm-openai:latest",
+  "command": "vllm serve nvidia/Llama-3.3-70B-Instruct-FP8 \\\n  --kv-cache-dtype fp8 \\\n  --tensor-parallel-size 1 \\\n  --async-scheduling \\\n  --no-enable-prefix-caching \\\n  --max-num-batched-tokens 8192",
+  "argv": [
+   "vllm",
+   "serve",
+   "nvidia/Llama-3.3-70B-Instruct-FP8",
+   "--kv-cache-dtype",
+   "fp8",
+   "--tensor-parallel-size",
+   "1",
+   "--async-scheduling",
+   "--no-enable-prefix-caching",
+   "--max-num-batched-tokens",
+   "8192"
+  ],
+  "docker_command": "docker run --gpus all \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  vllm/vllm-openai:latest nvidia/Llama-3.3-70B-Instruct-FP8 \\\n  --kv-cache-dtype fp8 \\\n  --tensor-parallel-size 1 \\\n  --async-scheduling \\\n  --no-enable-prefix-caching \\\n  --max-num-batched-tokens 8192",
+  "docker_argv": [
+   "docker",
+   "run",
+   "--gpus",
+   "all",
+   "--privileged",
+   "--ipc=host",
+   "-p",
+   "8000:8000",
+   "-v",
+   "~/.cache/huggingface:/root/.cache/huggingface",
+   "vllm/vllm-openai:latest",
+   "nvidia/Llama-3.3-70B-Instruct-FP8",
+   "--kv-cache-dtype",
+   "fp8",
+   "--tensor-parallel-size",
+   "1",
+   "--async-scheduling",
+   "--no-enable-prefix-caching",
+   "--max-num-batched-tokens",
+   "8192"
+  ],
+  "strategy_spec": {
+   "name": "single_node_tp",
+   "deploy_type": "single_node",
+   "display_name": "Tensor Parallel",
+   "orientation": "latency",
+   "description": "Single-node tensor parallel. Splits the model across all local GPUs. TP size is set to the GPU count at deploy time. The simplest multi-GPU strategy \u2014 works for all model architectures.\n",
+   "hardware_match": {
+    "min_gpus": 1,
+    "max_gpus": 8,
+    "multi_node": false
+   },
+   "vllm_args": [],
+   "parallel_flag": "--tensor-parallel-size"
+  },
+  "hardware_profile": {
+   "brand": "NVIDIA",
+   "generation": "hopper",
+   "compute_arch": "sm90",
+   "display_name": "H200",
+   "description": "NVIDIA H200 SXM 141 GB HBM3e \u00b7 8-GPU HGX node",
+   "gpu_count": 8,
+   "vram_gb": 1128,
+   "multi_node": false
+  },
+  "alternatives": {
+   "multi_node_tp": "/nvidia/Llama-3.3-70B-Instruct-FP8/strategies/multi_node_tp.json",
+   "multi_node_tp_pp": "/nvidia/Llama-3.3-70B-Instruct-FP8/strategies/multi_node_tp_pp.json",
+   "kv_store_centralized_mooncake": "/nvidia/Llama-3.3-70B-Instruct-FP8/strategies/kv_store_centralized_mooncake.json",
+   "kv_store_distributed_mooncake": "/nvidia/Llama-3.3-70B-Instruct-FP8/strategies/kv_store_distributed_mooncake.json"
+  },
+  "by_hardware": {
+   "h200": "/nvidia/Llama-3.3-70B-Instruct-FP8/hw/h200.json",
+   "h100": "/nvidia/Llama-3.3-70B-Instruct-FP8/hw/h100.json",
+   "b200": "/nvidia/Llama-3.3-70B-Instruct-FP8/hw/b200.json",
+   "gb200": "/nvidia/Llama-3.3-70B-Instruct-FP8/hw/gb200.json"
+  }
+ },
+ "model": {
+  "model_id": "nvidia/Llama-3.3-70B-Instruct-FP8",
+  "min_vllm_version": "0.12.0",
+  "architecture": "dense",
+  "parameter_count": "70B",
+  "active_parameters": "70B",
+  "context_length": 131072,
+  "base_args": [],
+  "base_env": {},
+  "install": {
+   "pip": {
+    "command": "uv venv\nsource .venv/bin/activate\nuv pip install -U vllm --torch-backend auto"
+   },
+   "docker": {
+    "command": "docker pull vllm/vllm-openai:latest"
+   }
+  }
+ },
+ "features": {
+  "spec_decoding": {
+   "description": "Eagle3 speculative decoding with externally trained draft model; the served checkpoint is unchanged.",
+   "args": [
+    "--speculative-config",
+    "{\"model\":\"RedHatAI/Llama-3.3-70B-Instruct-speculator.eagle3\",\"num_speculative_tokens\":3,\"method\":\"eagle3\"}"
+   ]
+  }
+ },
+ "opt_in_features": [
+  "spec_decoding"
+ ],
+ "variants": {
+  "default": {
+   "precision": "fp8",
+   "vram_minimum_gb": 84,
+   "description": "NVIDIA FP8 quantization for Hopper and Blackwell",
+   "supported_hardware": [
+    "h100",
+    "h200",
+    "b200",
+    "gb200"
+   ],
+   "extra_args": [
+    "--kv-cache-dtype",
+    "fp8"
+   ],
+   "extra_env": {}
+  }
+ },
+ "kv_offload_support": {
+  "offloading_cpu": "verified",
+  "offloading_fs": "verified"
+ },
+ "hardware_overrides": {
+  "hopper": {
+   "extra_args": [
+    "--async-scheduling",
+    "--no-enable-prefix-caching",
+    "--max-num-batched-tokens",
+    "8192"
+   ],
+   "extra_env": {}
+  },
+  "blackwell": {
+   "extra_args": [
+    "--async-scheduling",
+    "--no-enable-prefix-caching",
+    "--max-num-batched-tokens",
+    "8192",
+    "--compilation-config",
+    "{\"pass_config\":{\"fuse_allreduce_rms\":true,\"fuse_attn_quant\":true,\"eliminate_noops\":true}}"
+   ],
+   "extra_env": {}
+  },
+  "amd": {
+   "extra_args": [],
+   "extra_env": {
+    "VLLM_ROCM_USE_AITER": "1"
+   }
+  },
+  "xpu": {
+   "extra_args": [
+    "--block-size",
+    "64",
+    "--enforce-eager",
+    "--no-enable-prefix-caching",
+    "--disable-sliding-window",
+    "--max-model-len",
+    "9472",
+    "--max-num-batched-tokens",
+    "8192",
+    "--gpu-memory-utilization",
+    "0.9"
+   ],
+   "extra_env": {
+    "PYTHONUNBUFFERED": "1",
+    "TORCH_LLM_ALLREDUCE": "1",
+    "VLLM_ALLOW_LONG_MAX_MODEL_LEN": "1",
+    "VLLM_WORKER_MULTIPROC_METHOD": "spawn"
+   }
+  }
+ },
+ "guide": "## Overview\n\nLlama 3.3 70B Instruct is Meta's 70-billion parameter dense language model.\nNVIDIA provides FP8 and FP4 quantized variants optimized for Hopper (H100/H200)\nand Blackwell (B200/GB200) GPUs. FP4 is Blackwell-only and provides the best\nVRAM efficiency.\n\nTPU support is provided through [vLLM TPU](https://github.com/vllm-project/tpu-inference) with a recipe for [Trillium](https://github.com/AI-Hypercomputer/tpu-recipes/tree/main/inference/trillium/vLLM/Llama3.x).\n\n## Prerequisites\n\n- Hardware: 1x H100/H200 (FP8), 1x B200 (FP4), 1x MI300X/MI325X/MI355X, 2x GPUs, 8x Xeon6/Xeon5 NUMA nodes, or 4x Intel Arc Pro B70 (online FP8)\n- vLLM >= 0.12.0\n- CUDA Driver >= 575 for GPUs\n- Docker with NVIDIA Container Toolkit (recommended) for GPUs\n\n### AMD ROCm\n\nThe ROCm wheel requires Python 3.12, ROCm 7.0+, and glibc >= 2.35. Use the\nROCm Docker image when your host environment does not meet those requirements.\n\n```bash\nuv venv --python 3.12\nsource .venv/bin/activate\nuv pip install vllm --extra-index-url https://wheels.vllm.ai/rocm\n```\n\nLaunch on 1x MI300X / MI325X / MI355X with AITER enabled:\n\n```bash\nexport VLLM_ROCM_USE_AITER=1\nvllm serve meta-llama/Llama-3.3-70B-Instruct \\\n  --tensor-parallel-size 1\n```\n\nThe first AITER launch may take several minutes while ROCm kernels are compiled and cached.\n\n### pip (Intel Xeon 6 CPUs)\nFor Intel and AMD x86 CPUs, follow the [CPU pre-built wheels](https://docs.vllm.ai/en/latest/getting_started/installation/cpu/#pre-built-wheels) installation instructions.\n\n### Docker (Intel Xeon 6 CPUs)\n\n```bash\ndocker pull vllm/vllm-openai-cpu:latest-x86_64 # For Intel Xeon 6\n```\n\n### Docker (Cloud TPU \u2014 Trillium)\nTPU uses the separate `vllm/vllm-tpu` image (no pip wheel). Pull the tag specified by the upstream [Trillium recipe](https://github.com/AI-Hypercomputer/tpu-recipes/tree/main/inference/trillium/vLLM/Llama3.x), then run:\n```bash\ndocker run -itd --name llama33-tpu \\\n  --privileged --network host --shm-size 16G \\\n  -v /dev/shm:/dev/shm -e HF_TOKEN=$HF_TOKEN \\\n  vllm/vllm-tpu:latest \\\n    --model meta-llama/Llama-3.3-70B-Instruct \\\n    --tensor-parallel-size 8 \\\n    --max-model-len 16384 \\\n    --host 0.0.0.0 --port 8000\n```\nTrillium requires a 4-chip slice minimum.\n\n### Intel Xeon 6 Deployment via Docker\n\nLaunch the x86 CPU vLLM Docker container for `meta-llama/Llama-3.3-70B-Instruct`:\n\n```bash\ndocker run \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  vllm/vllm-openai-cpu:latest-x86_64 meta-llama/Llama-3.3-70B-Instruct \\\n  --tensor-parallel-size 8\n```\n\nTP/DP remain user/deployment choices rather than recipe defaults.\n\nThe following validation settings are not model requirements and are intentionally\nnot portable CPU recipe defaults:\n\n- `--max-num-batched-tokens` and `--max-num-seqs`: scheduler batch/concurrency\n  tuning for workload shape, latency targets, and platform capacity.\n- `--gpu-memory-utilization`: platform memory-budget tuning.\n- `--no-enable-prefix-caching`: workload/benchmark cache-policy tuning.\n- `VLLM_ENGINE_ITERATION_TIMEOUT_S`: runtime operational timeout tuning.\n\nHardware-specific overrides may still use these settings when they are part of a\nvalidated platform configuration.\n\n## Intel Arc Pro B70 (XPU)\n\nValidated on 4x Intel Arc Pro B70 (32 GB per card) with the official vLLM XPU\nimage `vllm/vllm-openai-xpu:latest`, TP=4. BF16 weights (~140 GB) exceed the\n128 GB node, so the validated configuration quantizes the base checkpoint\nonline to FP8 (`--quantization fp8`) with an FP8 KV cache.\n\n```bash\ndocker run --device /dev/dri \\\n  -v /dev/dri/by-path:/dev/dri/by-path --shm-size=16g \\\n  --privileged --ipc=host -p 8000:8000 \\\n  -v ~/.cache/huggingface:/root/.cache/huggingface \\\n  -e HF_TOKEN=$HF_TOKEN \\\n  -e PYTHONUNBUFFERED=1 \\\n  -e TORCH_LLM_ALLREDUCE=1 \\\n  -e VLLM_ALLOW_LONG_MAX_MODEL_LEN=1 \\\n  -e VLLM_WORKER_MULTIPROC_METHOD=spawn \\\n  vllm/vllm-openai-xpu:latest \\\n  meta-llama/Llama-3.3-70B-Instruct \\\n  --tensor-parallel-size 4 \\\n  --block-size 64 \\\n  --enforce-eager \\\n  --no-enable-prefix-caching \\\n  --disable-sliding-window \\\n  --max-model-len 9472 \\\n  --max-num-batched-tokens 8192 \\\n  --gpu-memory-utilization 0.9 \\\n  --quantization fp8 \\\n  --kv-cache-dtype fp8\n```\n\n## Client Usage\n\n```python\nfrom openai import OpenAI\n\nclient = OpenAI(base_url=\"http://localhost:8000/v1\", api_key=\"unused\")\nresponse = client.chat.completions.create(\n    model=\"nvidia/Llama-3.3-70B-Instruct-FP8\",\n    messages=[{\"role\": \"user\", \"content\": \"Hello, how are you?\"}],\n)\nprint(response.choices[0].message.content)\n```\n\n## Troubleshooting\n\n**FP4 variant not loading:**\nFP4 is only supported on Blackwell (compute capability 10.0). Use FP8 on Hopper.\n\n**OOM with BF16 on single GPU:**\nUse the FP8 variant (~70 GB) or FP4 variant (~40 GB) to fit on a single GPU.\n\n## References\n\n- [Llama-3.3-70B-Instruct](https://huggingface.co/meta-llama/Llama-3.3-70B-Instruct)\n- [NVIDIA FP8 variant](https://huggingface.co/nvidia/Llama-3.3-70B-Instruct-FP8)\n- [NVIDIA FP4 variant](https://huggingface.co/nvidia/Llama-3.3-70B-Instruct-FP4)\n- [TPU recipes: Trillium](https://github.com/AI-Hypercomputer/tpu-recipes/tree/main/inference/trillium/vLLM/Llama3.x)\n",
+ "source": {
+  "source": "vllm",
+  "repo": "vllm-project/vllm",
+  "ref": "main",
+  "sha": "109669cfb314d807f7e5fa474dcd03abfca8cbd4",
+  "path": "recipes/models/meta-llama/Llama-3.3-70B-Instruct.yaml",
+  "edit_url": "https://github.com/vllm-project/vllm/edit/main/recipes/models/meta-llama/Llama-3.3-70B-Instruct.yaml",
+  "overlays": []
+ }
+}

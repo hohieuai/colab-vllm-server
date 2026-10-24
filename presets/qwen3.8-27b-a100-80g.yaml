@@ -1,0 +1,24 @@
+# Qwen3.8-27B on a Colab A100 80 GB (High-RAM shape), configured for the
+# highest output quality:
+#   - BF16 weights, the full precision of the checkpoint (51.7 GiB).
+#   - BF16 KV cache, so vLLM never stores the cache in FP8.
+#   - Thinking on at the highest reasoning effort by default. Requests can
+#     still lower it with chat_template_kwargs.
+#   - The native 262,144-token context, and no speculative decoding.
+recipe: Qwen/Qwen3.8-27B
+variant: default
+gpu: A100_80G
+
+features:
+  text_only: true          # skip the vision tower; it frees memory for the KV cache
+  encoder_parallel: false
+
+overrides:
+  --kv-cache-dtype: bfloat16
+  --default-chat-template-kwargs:
+    enable_thinking: true
+    reasoning_effort: xhigh
+
+# The Rust frontend (the recipe's default) rejects n>1 and does not reliably
+# enforce structured outputs in vLLM 0.32. See docs/reference/validation-results.md.
+frontend: python

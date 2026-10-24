@@ -1,0 +1,21 @@
+# gpt-oss-120b on a Colab H100 80 GB, configured for the highest output
+# quality:
+#   - MXFP4 weights, the format OpenAI released the model in.
+#   - BF16 KV cache.
+#   - Requests should pass reasoning_effort: "high". vLLM has no server-side
+#     default for gpt-oss, and without it the model reasons at "medium".
+#
+# The recipe's vram_minimum_gb of 96 is a formula estimate. The checkpoint is
+# 65.2 GB and fits one 80 GB GPU, which the recipe verifies on H100. About
+# 8 GB is left for KV cache, so the context is capped at 32,768 tokens. For
+# longer prompts, use gpt-oss-120b-g4, which has the full context.
+recipe: openai/gpt-oss-120b
+variant: default
+gpu: H100
+vram_minimum_gb: 72
+
+overrides:
+  --max-model-len: 32768
+  --kv-cache-dtype: bfloat16
+
+frontend: python
