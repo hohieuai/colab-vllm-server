@@ -13,6 +13,9 @@ All notable changes to this project are documented here. The format follows
 - Docs and the operator skill tell you to run shell commands with `colab ssh -s NAME -- CMD` after
   freeing the tunnel, instead of `colab console`, and describe the SSH session limit as
   plan-dependent.
+- Dependabot runs weekly on Mondays, groups GitHub Actions and Python production/development
+  updates into fewer PRs, and labels them. CI cancels superseded runs, times out after 15 minutes,
+  and caches uv. `.github/CODEOWNERS` routes review to the maintainer.
 
 ### Added
 
