@@ -17,11 +17,14 @@
 import subprocess
 import sys
 import time
+from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
 from colab_vllm_server import cli
 from colab_vllm_server.check import run_checks
+from colab_vllm_server.resolve import Resolved
 
 SESSION = "vllm-qwen3-8-27b-a100-80g"
 
@@ -77,6 +80,70 @@ def test_up_refuses_to_restart_an_existing_vm_without_restart(runs, monkeypatch)
     monkeypatch.setattr(cli, "colab_sessions", lambda: f"[{SESSION}] gpu-a100 | Hardware: A100")
     with pytest.raises(SystemExit, match="already exists"):
         run_serve(monkeypatch, "up", "qwen3.8-27b-a100-80g")
+
+
+def test_up_passes_idle_timeout_zero_to_colab_exec(runs, monkeypatch):
+    """Long-running launch must use --timeout 0 (no idle limit on current colab CLI)."""
+    resolved = Resolved(
+        preset="qwen3.8-27b-a100-80g",
+        recipe="Qwen/Qwen3.8-27B",
+        recipe_sha="abc",
+        variant="default",
+        model_id="Qwen/Qwen3.8-27B",
+        precision="bf16",
+        gpu="A100_80G",
+        accelerator="A100",
+        high_mem=True,
+        recipe_hw="h100",
+        exact_hw=False,
+        vram_gb=80,
+        served_model_name="Qwen/Qwen3.8-27B",
+        argv=["vllm", "serve", "Qwen/Qwen3.8-27B"],
+        env={},
+        install_script="true",
+        warnings=[],
+    )
+    monkeypatch.setattr(cli, "resolve", lambda preset, refresh=False: resolved)
+    monkeypatch.setattr(cli, "colab_sessions", lambda: "[colab] No active sessions found.")
+    monkeypatch.setattr(cli, "colab_bin", lambda: "colab")
+    monkeypatch.setattr(cli, "free_port", lambda start: 18000)
+    monkeypatch.setattr(cli, "dotenv_get", lambda key: None)
+    monkeypatch.setattr(cli, "LOG_DIR", runs)
+    monkeypatch.setattr(
+        cli, "open_tunnel", lambda session, port, log: SimpleNamespace(pid=99, poll=lambda: None)
+    )
+    monkeypatch.setattr(
+        cli,
+        "endpoint_ready",
+        lambda state: True,  # skip the ready wait after exec+tunnel start
+    )
+
+    captured = {}
+
+    def fake_run(cmd, **kwargs):
+        captured.setdefault("run", []).append(list(cmd))
+        return SimpleNamespace(returncode=0)
+
+    def fake_popen(cmd, **kwargs):
+        captured["popen"] = list(cmd)
+        return SimpleNamespace(pid=42, poll=lambda: None)
+
+    monkeypatch.setattr(cli.subprocess, "run", fake_run)
+    monkeypatch.setattr(cli.subprocess, "Popen", fake_popen)
+
+    run_serve(monkeypatch, "up", "qwen3.8-27b-a100-80g")
+
+    cmd = captured["popen"]
+    assert cmd[0:4] == ["colab", "exec", "-s", SESSION]
+    assert cmd[cmd.index("-f") + 1].endswith("/launch.py")
+    assert Path(cmd[cmd.index("-f") + 1]).is_file()
+    assert cmd[cmd.index("--timeout") + 1] == "0"
+    assert f"VLLM_API_KEY={cli.DEFAULT_API_KEY}" in cmd
+    state = cli.load_state("qwen3.8-27b-a100-80g")
+    assert state["port"] == 18000
+    assert state["exec_pid"] == 42
+    assert state["tunnel_pid"] == 99
+    assert any(c[:2] == ["colab", "new"] and "--gpu" in c and "A100" in c for c in captured["run"])
 
 
 def test_endpoint_ready_requires_the_presets_model(monkeypatch):

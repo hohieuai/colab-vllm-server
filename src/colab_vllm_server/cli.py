@@ -138,7 +138,9 @@ def colab_bin() -> str:
     if not path:
         sys.exit(
             "[serve] the colab CLI is not installed. Install it with "
-            "`uv tool install google-colab-cli`, or set COLAB_BIN to its path."
+            "`uv tool install git+https://github.com/googlecolab/google-colab-cli` "
+            "(idle `--timeout` support; use PyPI once that ships), or set COLAB_BIN "
+            "to its path."
         )
     return path
 
@@ -333,6 +335,10 @@ def cmd_up(args):
     api_key = dotenv_get("VLLM_API_KEY") or DEFAULT_API_KEY
     LOG_DIR.mkdir(exist_ok=True)
     server_log = LOG_DIR / f"{session}.log"
+    # --timeout is an idle limit on google-colab-cli (after #185): seconds without
+    # kernel output before failing. 0 means no limit, so a quiet model load or a
+    # long-running server is not cut off. Needs a CLI that documents this; 0.7.5
+    # treated timeout as a wall-clock deadline and busy-waited after it.
     exec_cmd = [
         colab,
         "exec",
@@ -341,7 +347,7 @@ def cmd_up(args):
         "-f",
         str(launch_path),
         "--timeout",
-        str(7 * 24 * 3600),
+        "0",
         "--env",
         f"VLLM_API_KEY={api_key}",
     ]
@@ -394,7 +400,7 @@ def cmd_up(args):
                     f"`serve connect {r.preset}`, or release it with `serve down {r.preset}`."
                 )
             print("[serve] tunnel dropped, reconnecting ...")
-            # The VM accepts one `colab ssh` connection; let the old one close.
+            # The VM's SSH session limit is usually small; let the old slot free.
             time.sleep(5)
             tunnel = open_tunnel(session, args.port, tunnel_log)
             state["tunnel_pid"] = tunnel.pid
@@ -428,8 +434,8 @@ def cmd_connect(args):
     state = load_state(args.preset)
     if not state:
         sys.exit(f"[serve] {args.preset} is not running; `serve up {args.preset}` first")
-    # A runtime accepts one `colab ssh` connection at a time (HTTP 429), so the
-    # old tunnel must be gone before the new one connects.
+    # A runtime's SSH session limit is usually small (HTTP 429 when full), so
+    # the old tunnel must be gone before the new one connects.
     stop_tunnel(state)
     time.sleep(2)
     tunnel_log = open(Path(state["run_dir"]) / "tunnel.log", "a")  # noqa: SIM115 - outlives this function in ssh

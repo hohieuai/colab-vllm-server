@@ -38,8 +38,11 @@ through the tunnel and nothing else can.
 Before you start, you need:
 
 - [uv](https://docs.astral.sh/uv/)
-- The [`colab` CLI](https://pypi.org/project/google-colab-cli/) 0.7.5 or later, installed with
-  `uv tool install google-colab-cli` and signed in once with `colab sessions`
+- The [`colab` CLI](https://pypi.org/project/google-colab-cli/) with idle `--timeout`
+  semantics (`0` = no limit; google-colab-cli `#185`, after 0.7.5). Until that lands on
+  PyPI, install from source:
+  `uv tool install git+https://github.com/googlecolab/google-colab-cli`. Sign in once with
+  `colab sessions`
 - An `ed25519` SSH key in `~/.ssh`
 - Colab compute units. The A100 80 GB used below is the High-RAM machine shape, which needs Colab
   Pro or Pro+.

@@ -21,7 +21,7 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 export PATH="$HOME/.local/bin:$PATH"
 
 uv sync
-uv tool install google-colab-cli
+uv tool install git+https://github.com/googlecolab/google-colab-cli
 
 # The host's ~/.ssh is mounted read-only at ~/.ssh-host. ssh refuses keys that
 # other users can read, so copy them with private permissions.

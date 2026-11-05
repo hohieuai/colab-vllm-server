@@ -68,11 +68,11 @@ This avoids a public URL. A service such as a public tunnel would expose the ser
 with the address, and the API key would be the only protection. With the SSH tunnel, the key is
 a second layer. That is why the default key can be the placeholder `vllm`.
 
-The tunnel has two limits from Colab. First, a runtime accepts one `colab ssh` connection at a
-time, so the tunnel holds the VM's only SSH slot. Second, the token that authenticates the
-connection expires after an hour. An open connection keeps working past that hour because Colab
-checks the token only when a connection starts. A new connection, such as the one
-`serve connect` opens, gets a fresh token from `colab ssh`.
+The tunnel has two limits from Colab. First, a runtime allows only a small number of concurrent
+`colab ssh` connections; the limit depends on the Colab plan, and the tunnel uses one slot.
+Second, the token that authenticates the connection expires after an hour. An open connection
+keeps working past that hour because Colab checks the token only when a connection starts. A new
+connection, such as the one `serve connect` opens, gets a fresh token from `colab ssh`.
 
 ## Why presets use the Python frontend
 

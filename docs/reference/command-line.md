@@ -152,8 +152,8 @@ uv run serve connect <preset>
 ```
 
 Stops the tunnel process, opens a new tunnel on the same local port, and waits up to 60 seconds
-for `GET /v1/models` to answer. The server and the VM are not touched. A Colab runtime accepts one
-`colab ssh` connection at a time, so the old tunnel is stopped first.
+for `GET /v1/models` to answer. The server and the VM are not touched. A Colab runtime's SSH
+session limit is usually small, so the old tunnel is stopped first.
 
 ## serve down
 
