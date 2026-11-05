@@ -30,14 +30,14 @@ Open a new terminal so that `uv` is on your `PATH`, and check it:
 uv --version
 ```
 
-Next, install the Colab CLI. colab-vllm-server needs version 0.7.5 or later:
+Next, install the Colab CLI. colab-vllm-server needs a build with idle `--timeout`
+semantics (`0` = no limit; after google-colab-cli 0.7.5). Until that lands on PyPI, install
+from source:
 
 ```bash
-uv tool install google-colab-cli
+uv tool install git+https://github.com/googlecolab/google-colab-cli
 colab version
 ```
-
-The second command prints `Version: 0.7.5` or a later version.
 
 Now get colab-vllm-server and go into its folder. Run every later command from this folder:
 

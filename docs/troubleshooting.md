@@ -55,21 +55,22 @@ with `uv run serve up <preset> --restart`.
 
 ## Fix "Already-active SSH session (HTTP 429)"
 
-A Colab runtime accepts one `colab ssh` connection at a time, and the endpoint's tunnel uses it.
-While the tunnel is open, `colab ssh` to the same session fails with HTTP 429.
+A Colab runtime allows only a small number of concurrent `colab ssh` connections. The limit
+depends on the Colab plan. The endpoint's tunnel uses one slot, so another `colab ssh` to the
+same session often fails with HTTP 429 while the tunnel is open.
 
-To run a shell command on the VM, use `colab console`. It opens a shell through the VM's terminal,
-not through SSH or the notebook kernel, so it works while the endpoint runs:
+To run a shell command on the VM, free that slot, run the command, then reopen the tunnel.
+If `serve status` already shows `tunnel=down`, skip the `kill` line:
 
 ```bash
-echo "nvidia-smi --query-gpu=name,memory.used --format=csv" | colab console -s vllm-qwen3-8-27b-a100-80g
+kill "$(python3 -c "import json; print(json.load(open('runs/qwen3.8-27b-a100-80g.state.json'))['tunnel_pid'])")"
+colab ssh -s vllm-qwen3-8-27b-a100-80g -- nvidia-smi --query-gpu=name,memory.used --format=csv
+uv run serve connect qwen3.8-27b-a100-80g
 ```
 
-The output contains terminal control bytes. Filter it with `grep -a` for the line you need.
-
 Don't use `colab exec` for this. The endpoint's server runs inside a notebook cell that never
-finishes, so the kernel stays busy and a new `colab exec` never starts. In testing, it ignored
-`--timeout 15` and did not return. If you started one, stop it with Ctrl+C.
+finishes, so the kernel stays busy and a new `colab exec` never starts. If you started one,
+stop it with Ctrl+C.
 
 ## Fix "the colab CLI is not signed in"
 

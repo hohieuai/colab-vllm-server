@@ -47,7 +47,8 @@ run `serve down` when the work is done.
 
 ## Colab pitfalls
 
-- A running endpoint occupies the notebook kernel. `colab exec` on that VM never returns. Use
-  `colab console -s <session>` for shell commands.
-- A VM accepts one `colab ssh` connection, and the tunnel holds it.
+- A running endpoint occupies the notebook kernel. `colab exec` on that VM never returns. For a
+  shell command, free the tunnel if it is up, run `colab ssh -s <session> -- <command>`, then
+  `serve connect <preset>`.
+- A VM's SSH session limit is usually small and depends on the Colab plan; the tunnel uses one slot.
 - `colab new --gpu` silently falls back to an A100 for an unknown value. The resolver validates it.

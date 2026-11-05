@@ -6,6 +6,14 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- `serve up` passes `--timeout 0` to `colab exec`, matching google-colab-cli idle-timeout semantics
+  (no limit while the server runs). Needs a CLI build with that behavior (after 0.7.5 / `#185`).
+- Docs and the operator skill tell you to run shell commands with `colab ssh -s NAME -- CMD` after
+  freeing the tunnel, instead of `colab console`, and describe the SSH session limit as
+  plan-dependent.
+
 ### Added
 
 - `serve resolve` builds the `vllm serve` command for a preset from the rendering that

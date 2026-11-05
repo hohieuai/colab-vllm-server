@@ -45,10 +45,10 @@ requests, because vLLM has no server-side default for it.
 - **Quote messages with single quotes.** In zsh, a double-quoted message ending in `!` leaves the
   quote open.
 - **Don't use `colab exec` on a running endpoint's VM.** The server occupies the notebook kernel, so
-  `colab exec` never returns. To run a shell command on the VM, pipe it to
-  `colab console -s <session>`.
-- **Don't open `colab ssh` to a running endpoint's VM.** The tunnel holds the only SSH slot, and a
-  second connection fails with HTTP 429.
+  `colab exec` never returns. To run a shell command, free the tunnel if needed, then
+  `colab ssh -s <session> -- <command>`, and reopen with `serve connect <preset>`.
+- **Don't open a second `colab ssh` while the tunnel is up.** The tunnel uses an SSH slot; the
+  session limit is small and plan-dependent, so another connection often fails with HTTP 429.
 - **Report sampling settings.** The server's defaults come from the model, not from OpenAI. When
   results matter, pass `temperature`, `top_p`, and `max_tokens` explicitly.
 
@@ -61,7 +61,8 @@ For a VM that runs an endpoint, the rules here take precedence:
   to finish with `colab stop -s NAME`. For an endpoint, `serve down` also stops the local tunnel and
   log stream, removes the state file, and confirms in `colab sessions` that the VM is gone.
 - **Don't use `colab exec` on an endpoint's VM.** `colab-operator` prefers `colab exec`, but the
-  server holds the kernel, so the command never returns. Use `colab console`.
+  server holds the kernel, so the command never returns. Use `colab ssh -s NAME -- CMD` after
+  freeing the tunnel, then `serve connect`.
 - **Don't pass `--config` to `colab` for endpoint sessions.** `serve` uses the CLI's default
   session file, which is also what `colab-monitor` reads.
 
