@@ -13,9 +13,9 @@ All notable changes to this project are documented here. The format follows
 - Docs and the operator skill tell you to run shell commands with `colab ssh -s NAME -- CMD` after
   freeing the tunnel, instead of `colab console`, and describe the SSH session limit as
   plan-dependent.
-- Dependabot runs weekly on Mondays, groups GitHub Actions and Python production/development
-  updates into fewer PRs, and labels them. CI cancels superseded runs, times out after 15 minutes,
-  and caches uv. `.github/CODEOWNERS` routes review to the maintainer.
+- CI runs one job, on Linux with Python 3.11, for pull requests and on demand. It cancels
+  superseded runs, times out after 10 minutes, and caches uv. Dependabot version updates are off.
+  `.github/CODEOWNERS` routes review to the maintainer.
 
 ### Added
 
@@ -49,4 +49,4 @@ All notable changes to this project are documented here. The format follows
 - curl and Python examples for each API feature, and documentation.
 - A Claude Code plugin with a skill for operating endpoints, published through
   `.claude-plugin/marketplace.json`, and `CLAUDE.md` with project commands for contributors.
-- A dev container, VS Code settings, issue and pull request templates, and Dependabot.
+- A dev container, VS Code settings, and issue and pull request templates.
