@@ -14,4 +14,4 @@
 
 """Run an OpenAI-compatible vLLM endpoint on a Google Colab GPU."""
 
-__version__ = "0.1.0"
+__version__ = "0.0.1"

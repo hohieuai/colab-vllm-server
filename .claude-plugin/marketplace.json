@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "colab-vllm-server",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Claude Code plugins for colab-vllm-server: run and use an OpenAI-compatible vLLM endpoint on a Google Colab GPU",
   "owner": {
     "name": "The colab-vllm-server Authors"
@@ -10,7 +10,7 @@
     {
       "name": "colab-vllm-server",
       "description": "Start, test, use, and stop a vLLM endpoint on a Colab GPU with the serve command, without leaving a VM running by mistake",
-      "version": "0.1.0",
+      "version": "0.0.1",
       "source": "./",
       "category": "development"
     }
