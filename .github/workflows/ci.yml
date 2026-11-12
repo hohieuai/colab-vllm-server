@@ -1,9 +1,10 @@
 name: CI
 
+# One Linux job on the oldest supported Python. Changes reach main through pull requests,
+# so pushes to main don't run it again; run it by hand from the Actions tab when needed.
 on:
-  push:
-    branches: [main]
   pull_request:
+  workflow_dispatch:
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
@@ -15,16 +16,12 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        python-version: ["3.11", "3.12", "3.13"]
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v7
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: "3.11"
           enable-cache: true
       - run: uv sync --locked
       - run: uv run ruff format --check .

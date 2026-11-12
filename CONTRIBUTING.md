@@ -45,8 +45,8 @@ commands:
 
 ## Checks
 
-Run these before you open a pull request. CI runs the same commands on Python 3.11, 3.12, and
-3.13:
+Run these before you open a pull request. CI runs the same commands on Linux with Python 3.11,
+the oldest supported version:
 
 ```bash
 uv run ruff format .
