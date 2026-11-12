@@ -1,6 +1,6 @@
 [project]
 name = "colab-vllm-server"
-version = "0.1.0"
+version = "0.0.1"
 description = "Run an OpenAI-compatible vLLM endpoint on a Google Colab GPU, configured from vLLM Recipes"
 readme = "README.md"
 license = "Apache-2.0"

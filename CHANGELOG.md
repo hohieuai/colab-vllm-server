@@ -6,16 +6,10 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-### Changed
+## [0.0.1] - 2026-11-13
 
-- `serve up` passes `--timeout 0` to `colab exec`, matching google-colab-cli idle-timeout semantics
-  (no limit while the server runs). Needs a CLI build with that behavior (after 0.7.5 / `#185`).
-- Docs and the operator skill tell you to run shell commands with `colab ssh -s NAME -- CMD` after
-  freeing the tunnel, instead of `colab console`, and describe the SSH session limit as
-  plan-dependent.
-- CI runs one job, on Linux with Python 3.11, for pull requests and on demand. It cancels
-  superseded runs, times out after 10 minutes, and caches uv. Dependabot version updates are off.
-  `.github/CODEOWNERS` routes review to the maintainer.
+First release. Builds installed from `main` before this release reported version 0.1.0. The
+Changed list describes what differs from those builds.
 
 ### Added
 
@@ -50,3 +44,17 @@ All notable changes to this project are documented here. The format follows
 - A Claude Code plugin with a skill for operating endpoints, published through
   `.claude-plugin/marketplace.json`, and `CLAUDE.md` with project commands for contributors.
 - A dev container, VS Code settings, and issue and pull request templates.
+
+### Changed
+
+- `serve up` passes `--timeout 0` to `colab exec`, matching google-colab-cli idle-timeout semantics
+  (no limit while the server runs). Needs a CLI build with that behavior (after 0.7.5 / `#185`).
+- Docs and the operator skill tell you to run shell commands with `colab ssh -s NAME -- CMD` after
+  freeing the tunnel, instead of `colab console`, and describe the SSH session limit as
+  plan-dependent.
+- CI runs one job, on Linux with Python 3.11, for pull requests and on demand. It cancels
+  superseded runs, times out after 10 minutes, and caches uv. Dependabot version updates are off.
+  `.github/CODEOWNERS` routes review to the maintainer.
+
+[Unreleased]: https://github.com/hohieuai/colab-vllm-server/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/hohieuai/colab-vllm-server/releases/tag/v0.0.1
