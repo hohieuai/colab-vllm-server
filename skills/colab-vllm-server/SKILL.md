@@ -19,6 +19,8 @@ hour until it is stopped, so always stop what you start.
 - If `serve` says the CLI could not read its sign-in from the OS keyring, the keyring is usually
   locked. Ask the user to unlock it. Don't start a new sign-in. If `serve up` says it needs colab
   CLI 0.7.6 or later, ask the user before you run `uv tool upgrade google-colab-cli`.
+- If `serve` says the tunnel needs an SSH key, ask the user to create one or to set
+  `COLAB_SSH_KEY`. Never create or copy keys for them.
 - Tell the user the cost before `serve up`: the A100 80 GB uses about 7 compute units per hour, and
   the first start takes 15 to 20 minutes.
 

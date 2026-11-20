@@ -45,7 +45,8 @@ Before you start, you need:
 - [uv](https://docs.astral.sh/uv/)
 - The [`colab` CLI](https://pypi.org/project/google-colab-cli/) 0.7.6 or later:
   `uv tool install google-colab-cli`. Sign in once with `colab sessions`
-- An `ed25519` SSH key in `~/.ssh`
+- An SSH key pair for the tunnel: `~/.ssh/id_ed25519` or `~/.ssh/id_ecdsa`, or another ed25519 or
+  ECDSA key that you name with `COLAB_SSH_KEY` in `.env.local`
 - Colab compute units. The A100 80 GB used below is the High-RAM machine shape, which needs Colab
   Pro or Pro+.
 

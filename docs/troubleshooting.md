@@ -89,6 +89,25 @@ Unlock the keyring, for example by signing in to the computer's desktop, and run
 command again. The end of the message repeats the CLI's own reason. If it says that no keyring
 backend is available, install one for your system, then sign in again with `colab sessions`.
 
+## Fix "the tunnel needs an SSH key"
+
+The tunnel uses `colab ssh`, which sends your public key to the VM, and `ssh`, which signs in with
+the private key. `colab ssh` looks only for `~/.ssh/id_ed25519.pub` and `~/.ssh/id_ecdsa.pub`, and
+it rejects RSA keys. `serve up` and `serve connect` check for the key pair first, so no VM starts
+without one.
+
+Create a key:
+
+```bash
+ssh-keygen -t ed25519
+```
+
+Or, to use a key you already have under another name, add its private key path to `.env.local`:
+
+```bash
+COLAB_SSH_KEY=~/.ssh/id_ed25519_colab
+```
+
 ## Fix "serve up needs 0.7.6 or later"
 
 `serve up` checks the colab CLI's version before it touches Colab. Version 0.7.5 and older read
