@@ -36,7 +36,7 @@ from colab_vllm_server import recipes
 
 ROOT = Path(__file__).resolve().parents[2]
 PORT = 8000
-# Values `colab new --gpu` accepts (google-colab-cli 0.7).
+# Values `colab new --gpu` accepts (google-colab-cli 0.8).
 COLAB_ACCELERATORS = {"T4", "L4", "G4", "H100", "A100"}
 
 DEFAULT_PIP = "uv venv\nsource .venv/bin/activate\nuv pip install -U vllm --torch-backend auto"

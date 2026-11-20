@@ -51,4 +51,5 @@ run `serve down` when the work is done.
   shell command, free the tunnel if it is up, run `colab ssh -s <session> -- <command>`, then
   `serve connect <preset>`.
 - A VM's SSH session limit is usually small and depends on the Colab plan; the tunnel uses one slot.
-- `colab new --gpu` silently falls back to an A100 for an unknown value. The resolver validates it.
+- `colab new --gpu` rejects an unknown value since CLI 0.7.6, and older releases silently gave an
+  A100. The resolver validates it before a VM starts.

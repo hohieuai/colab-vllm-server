@@ -6,6 +6,13 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Changed
+
+- Install the `colab` CLI from PyPI with `uv tool install google-colab-cli`. Version 0.7.6 is the
+  first release with what colab-vllm-server needs: `--timeout 0` means no time limit, and
+  `colab ssh -- CMD` runs a single command. The README, the quickstart, the dev container and the
+  "not installed" message no longer install it from source.
+
 ## [0.0.1] - 2026-11-13
 
 First release. Builds installed from `main` before this release reported version 0.1.0. The

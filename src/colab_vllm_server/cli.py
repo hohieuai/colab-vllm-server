@@ -137,10 +137,8 @@ def colab_bin() -> str:
     path = os.environ.get("COLAB_BIN") or shutil.which("colab")
     if not path:
         sys.exit(
-            "[serve] the colab CLI is not installed. Install it with "
-            "`uv tool install git+https://github.com/googlecolab/google-colab-cli` "
-            "(idle `--timeout` support; use PyPI once that ships), or set COLAB_BIN "
-            "to its path."
+            "[serve] the colab CLI is not installed. Install version 0.7.6 or later "
+            "with `uv tool install google-colab-cli`, or set COLAB_BIN to its path."
         )
     return path
 
@@ -335,10 +333,10 @@ def cmd_up(args):
     api_key = dotenv_get("VLLM_API_KEY") or DEFAULT_API_KEY
     LOG_DIR.mkdir(exist_ok=True)
     server_log = LOG_DIR / f"{session}.log"
-    # --timeout is an idle limit on google-colab-cli (after #185): seconds without
+    # --timeout is an idle limit since google-colab-cli 0.7.6: seconds without
     # kernel output before failing. 0 means no limit, so a quiet model load or a
-    # long-running server is not cut off. Needs a CLI that documents this; 0.7.5
-    # treated timeout as a wall-clock deadline and busy-waited after it.
+    # long-running server is not cut off. 0.7.5 treated timeout as a wall-clock
+    # deadline and busy-waited after it.
     exec_cmd = [
         colab,
         "exec",
