@@ -49,7 +49,8 @@ uv run serve up <preset> [--port PORT] [--restart] [--high-mem] [--refresh]
 | `--high-mem` | Request the High-RAM machine shape. GPUs with `high_mem: true` request it without this option. |
 | `--refresh` | Fetch the recipe again before resolving. |
 
-Before anything else, `up` runs `colab sessions` to confirm that the colab CLI is signed in. If a
+Before anything else, `up` checks that the colab CLI is version 0.7.6 or later, and runs
+`colab sessions` to confirm that the CLI is signed in. If a
 VM for the preset exists, `up` stops and asks for `--restart`, because the server on that VM may be
 healthy behind a dropped tunnel. Run `serve connect` for that case. `up` waits up to 45 minutes for
 `GET /v1/models` to list the preset's model, and reconnects a dropped tunnel up to 5 times. The

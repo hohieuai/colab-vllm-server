@@ -16,6 +16,9 @@ hour until it is stopped, so always stop what you start.
   `git clone https://github.com/hohieuai/colab-vllm-server`.
 - Check that the Colab CLI is signed in with `colab sessions`. If it asks for an authorization code,
   stop and ask the user to run `colab sessions` in their own terminal. Never paste codes for them.
+- If `serve` says the CLI could not read its sign-in from the OS keyring, the keyring is usually
+  locked. Ask the user to unlock it. Don't start a new sign-in. If `serve up` says it needs colab
+  CLI 0.7.6 or later, ask the user before you run `uv tool upgrade google-colab-cli`.
 - Tell the user the cost before `serve up`: the A100 80 GB uses about 7 compute units per hour, and
   the first start takes 15 to 20 minutes.
 

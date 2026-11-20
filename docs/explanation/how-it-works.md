@@ -33,7 +33,9 @@ maintainers. This is why `serve resolve` warns on every adapted change.
 A Colab GPU costs compute units from the moment the VM starts, and the first launch of a large
 model takes 15 minutes. A mistake found after the download wastes both. The resolver therefore
 checks everything it can from the recipe before it asks Colab for a VM: memory, eligible
-hardware, precision support, and node count.
+hardware, precision support, and node count. `serve up` also checks that the colab CLI is version
+0.7.6 or later. Older releases read the launch's `--timeout 0` as a deadline that has already
+passed, not as no limit.
 
 The memory check uses the recipe's `vram_minimum_gb`, which is a formula estimate. For some
 models it is far from the truth: gpt-oss-120b is estimated at 96 GB, but its checkpoint is 65 GB

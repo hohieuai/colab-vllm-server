@@ -106,6 +106,7 @@ def test_up_passes_idle_timeout_zero_to_colab_exec(runs, monkeypatch):
     monkeypatch.setattr(cli, "resolve", lambda preset, refresh=False: resolved)
     monkeypatch.setattr(cli, "colab_sessions", lambda: "[colab] No active sessions found.")
     monkeypatch.setattr(cli, "colab_bin", lambda: "colab")
+    monkeypatch.setattr(cli, "colab_version", lambda: (0, 8, 0))
     monkeypatch.setattr(cli, "free_port", lambda start: 18000)
     monkeypatch.setattr(cli, "dotenv_get", lambda key: None)
     monkeypatch.setattr(cli, "LOG_DIR", runs)
@@ -144,6 +145,74 @@ def test_up_passes_idle_timeout_zero_to_colab_exec(runs, monkeypatch):
     assert state["exec_pid"] == 42
     assert state["tunnel_pid"] == 99
     assert any(c[:2] == ["colab", "new"] and "--gpu" in c and "A100" in c for c in captured["run"])
+
+
+def test_up_stops_before_touching_colab_with_a_cli_older_than_0_7_6(runs, monkeypatch):
+    """0.7.5 reads `--timeout 0` as a deadline that has passed, so the launch would not hold."""
+    monkeypatch.setattr(cli, "colab_version", lambda: (0, 7, 5))
+    ran = []
+
+    def record(cmd, **kwargs):
+        ran.append(list(cmd))
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(cli.subprocess, "run", record)
+    monkeypatch.setattr(cli.subprocess, "Popen", record)
+    monkeypatch.setattr(cli, "colab_sessions", lambda: record(["colab", "sessions"]).stdout)
+    with pytest.raises(SystemExit, match=r"0\.7\.5.*0\.7\.6 or later"):
+        run_serve(monkeypatch, "up", "qwen3.8-27b-a100-80g")
+    assert ran == []
+
+
+def test_up_goes_on_when_the_cli_version_cannot_be_read(monkeypatch, capsys):
+    monkeypatch.setattr(cli, "colab_version", lambda: None)
+    cli.require_colab_cli()
+    assert "could not read the colab CLI's version" in capsys.readouterr().out
+
+
+@pytest.mark.parametrize(
+    ("printed", "version"),
+    [
+        ("Version: 0.8.0\n", (0, 8, 0)),
+        ("Version: 0.7.6.dev12+gd2d977949\n", (0, 7, 6)),
+        (
+            (
+                "[colab] A new version of Colab CLI is available: 0.8.0 (current: 0.7.5)\n"
+                "Version: 0.7.5\n"
+            ),
+            (0, 7, 5),
+        ),
+        ("", None),
+    ],
+)
+def test_colab_version_reads_the_release_of_any_build(monkeypatch, printed, version):
+    monkeypatch.setattr(cli, "colab_bin", lambda: "colab")
+    monkeypatch.setattr(
+        cli.subprocess,
+        "run",
+        lambda cmd, **kwargs: SimpleNamespace(returncode=0, stdout="", stderr=printed),
+    )
+    assert cli.colab_version() == version
+
+
+def test_a_locked_keyring_is_not_reported_as_a_missing_sign_in(monkeypatch):
+    """The CLI waits 30 s for a locked keyring, warns, then starts a sign-in it can't finish."""
+    printed = (
+        "Warning: Could not read the OAuth token from the OS keyring "
+        "(Operation 'get_password' timed out after 30.0s).\n"
+        "After approving, Google will display an authorization code.\n"
+        "Enter the authorization code: "
+    )
+    monkeypatch.setattr(cli, "colab_bin", lambda: "colab")
+    monkeypatch.setattr(
+        cli.subprocess,
+        "run",
+        lambda cmd, **kwargs: SimpleNamespace(returncode=1, stdout="", stderr=printed),
+    )
+    with pytest.raises(SystemExit, match="keyring") as exit_info:
+        cli.colab_sessions()
+    assert "not signed in" not in str(exit_info.value)
+    assert "timed out after 30.0s" in str(exit_info.value)
 
 
 def test_endpoint_ready_requires_the_presets_model(monkeypatch):

@@ -13,10 +13,20 @@ All notable changes to this project are documented here. The format follows
 
 ### Changed
 
+- `serve up` checks that the colab CLI is version 0.7.6 or later before it touches Colab, and
+  stops with the command that upgrades it. With 0.7.5 and older, the launch's `--timeout 0` was a
+  deadline that had already passed, and the VM started anyway.
+- Troubleshooting covers the CLI's newer HTTP 429 message, `SSH session limit reached`.
 - Install the `colab` CLI from PyPI with `uv tool install google-colab-cli`. Version 0.7.6 is the
   first release with what colab-vllm-server needs: `--timeout 0` means no time limit, and
   `colab ssh -- CMD` runs a single command. The README, the quickstart, the dev container and the
   "not installed" message no longer install it from source.
+
+### Fixed
+
+- A locked OS keyring is no longer reported as a missing sign-in. Since 0.7.6 the colab CLI keeps
+  its sign-in in the keyring, and when it can't read it, it starts a new sign-in. `serve` now says
+  that the keyring could not be read, quotes the CLI's reason, and says to unlock it.
 
 ## [0.0.1] - 2026-11-13
 
