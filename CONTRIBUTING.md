@@ -90,6 +90,7 @@ Paste the summary lines into the pull request.
 | `src/colab_vllm_server/check.py` | The validation checks behind `serve check` |
 | `remote/launch.py` | Runs inside the Colab kernel: `nvidia-smi`, install, and `vllm serve` |
 | `evals/loadtest.py` | Concurrency sweep |
+| `scripts/make_logo.py` | Writes the logo in `docs/images/`. Change its numbers and run it again to change the logo |
 
 ## Guidelines
 

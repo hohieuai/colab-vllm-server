@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- A logo: a paragraph of streamed text drawn as dots, the newest tokens largest, in black and
+  white. It sits at the top of the README, and `scripts/make_logo.py` writes it.
+
 ### Changed
 
 - Install the `colab` CLI from PyPI with `uv tool install google-colab-cli`. Version 0.7.6 is the

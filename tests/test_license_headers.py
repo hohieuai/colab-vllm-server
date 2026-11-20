@@ -17,7 +17,7 @@ from pathlib import Path
 import pytest
 
 ROOT = Path(__file__).parents[1]
-SOURCE_DIRS = ["src", "tests", "evals", "remote", "examples", ".devcontainer"]
+SOURCE_DIRS = ["src", "tests", "evals", "remote", "examples", "scripts", ".devcontainer"]
 SOURCES = sorted(
     p
     for d in SOURCE_DIRS

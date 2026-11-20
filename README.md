@@ -1,5 +1,10 @@
 <div align="center">
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/images/logo-dark.svg">
+  <img src="docs/images/logo-light.svg" width="72" height="72" alt="">
+</picture>
+
 # colab-vllm-server
 
 Run an OpenAI-compatible vLLM endpoint for an open-weight model on a Google Colab GPU.
