@@ -107,6 +107,17 @@ Paste the summary lines into the pull request.
   created. `tests/test_license_headers.py` fails for a file without it.
 - Update `CHANGELOG.md` under *Unreleased* for any user-visible change.
 
+## Releases
+
+1. Open a pull request titled `chore: release X.Y.Z`. Set the version in `pyproject.toml`,
+   `src/colab_vllm_server/__init__.py`, `.claude-plugin/plugin.json`, both entries in
+   `.claude-plugin/marketplace.json`, and the package's own entry in `uv.lock`. Change the clone
+   commands in the README, the quickstart, and the skill to `--branch vX.Y.Z`, which
+   `tests/test_install_commands.py` checks, and move the *Unreleased* changelog entries into a
+   section dated today.
+2. When it merges, tag the merge commit `vX.Y.Z` at once, because the clone commands now name that
+   tag. Publish a GitHub release whose notes are that changelog section.
+
 ## Pull requests
 
 Write the pull request title in [Conventional Commits](https://www.conventionalcommits.org/) form,

@@ -6,37 +6,33 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-### Added
-
-- `COLAB_SSH_KEY` names the SSH key for the tunnel, for a key not called `~/.ssh/id_ed25519` or
-  `~/.ssh/id_ecdsa`. `serve` passes it to both `colab ssh` and `ssh`.
-
-### Changed
-
-- `serve up` and `serve connect` check for the tunnel's SSH key pair before they touch Colab.
-  Before, a missing key showed only after the VM had started, when the tunnel failed five times
-  with `no SSH public key found` and the VM kept running.
-
 ## [0.0.2] - 2026-11-21
 
 Supports the `colab` CLI 0.7.6 or later from PyPI, including 0.8.0. `serve up` checks the CLI's
-version, and an unreadable keyring is reported as such. Also adds a logo.
+version and the tunnel's SSH key before it starts a VM, and an unreadable keyring is reported as
+such. Also adds a logo.
 
 ### Added
 
 - A logo: a paragraph of streamed text drawn as dots, the newest tokens largest, in black and
   white. It sits at the top of the README, and `scripts/make_logo.py` writes it.
+- `COLAB_SSH_KEY` names the SSH key for the tunnel, for a key not called `~/.ssh/id_ed25519` or
+  `~/.ssh/id_ecdsa`. `serve` passes it to both `colab ssh` and `ssh`.
 
 ### Changed
 
 - `serve up` checks that the colab CLI is version 0.7.6 or later before it touches Colab, and
   stops with the command that upgrades it. With 0.7.5 and older, the launch's `--timeout 0` was a
   deadline that had already passed, and the VM started anyway.
-- Troubleshooting covers the CLI's newer HTTP 429 message, `SSH session limit reached`.
+- `serve up` and `serve connect` check for the tunnel's SSH key pair before they touch Colab.
+  Before, a missing key showed only after the VM had started, when the tunnel failed five times
+  with `no SSH public key found` and the VM kept running.
 - Install the `colab` CLI from PyPI with `uv tool install google-colab-cli`. Version 0.7.6 is the
   first release with what colab-vllm-server needs: `--timeout 0` means no time limit, and
   `colab ssh -- CMD` runs a single command. The README, the quickstart, the dev container and the
   "not installed" message no longer install it from source.
+- The README, the quickstart and the agent skill clone this release, `v0.0.2`, instead of `main`.
+- Troubleshooting covers the CLI's newer HTTP 429 message, `SSH session limit reached`.
 
 ### Fixed
 
