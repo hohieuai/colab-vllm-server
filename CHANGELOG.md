@@ -6,6 +6,11 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-11-21
+
+Supports the `colab` CLI 0.7.6 or later from PyPI, including 0.8.0. `serve up` checks the CLI's
+version, and an unreadable keyring is reported as such. Also adds a logo.
+
 ### Added
 
 - A logo: a paragraph of streamed text drawn as dots, the newest tokens largest, in black and
@@ -78,5 +83,6 @@ Changed list describes what differs from those builds.
   superseded runs, times out after 10 minutes, and caches uv. Dependabot version updates are off.
   `.github/CODEOWNERS` routes review to the maintainer.
 
-[Unreleased]: https://github.com/hohieuai/colab-vllm-server/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/hohieuai/colab-vllm-server/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/hohieuai/colab-vllm-server/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/hohieuai/colab-vllm-server/releases/tag/v0.0.1
