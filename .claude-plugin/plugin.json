@@ -1,6 +1,6 @@
 {
   "name": "colab-vllm-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Start, test, use, and stop a vLLM endpoint on a Colab GPU with the serve command, without leaving a VM running by mistake",
   "author": {
     "name": "The colab-vllm-server Authors"
