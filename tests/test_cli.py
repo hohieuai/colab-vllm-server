@@ -27,12 +27,29 @@ from colab_vllm_server.check import run_checks
 from colab_vllm_server.resolve import Resolved
 
 SESSION = "vllm-qwen3-8-27b-a100-80g"
+FIND_SSH_KEY = cli.ssh_key
 
 
 @pytest.fixture
 def runs(tmp_path, monkeypatch):
     monkeypatch.setattr(cli, "RUNS_DIR", tmp_path)
     monkeypatch.setattr(cli, "colab_bin", lambda: "true")
+    monkeypatch.setattr(cli, "ssh_key", lambda: tmp_path / "id_ed25519")
+    return tmp_path
+
+
+def key_pair(path: Path) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text("private")
+    Path(f"{path}.pub").write_text("ssh-ed25519 AAAA test")
+    return path
+
+
+@pytest.fixture
+def home(tmp_path, monkeypatch):
+    """An empty home folder, and no COLAB_SSH_KEY in the environment or .env.local."""
+    monkeypatch.setenv("HOME", str(tmp_path))
+    monkeypatch.setattr(cli, "dotenv_get", lambda key: None)
     return tmp_path
 
 
@@ -111,7 +128,9 @@ def test_up_passes_idle_timeout_zero_to_colab_exec(runs, monkeypatch):
     monkeypatch.setattr(cli, "dotenv_get", lambda key: None)
     monkeypatch.setattr(cli, "LOG_DIR", runs)
     monkeypatch.setattr(
-        cli, "open_tunnel", lambda session, port, log: SimpleNamespace(pid=99, poll=lambda: None)
+        cli,
+        "open_tunnel",
+        lambda session, port, log, key: SimpleNamespace(pid=99, poll=lambda: None),
     )
     monkeypatch.setattr(
         cli,
@@ -162,6 +181,68 @@ def test_up_stops_before_touching_colab_with_a_cli_older_than_0_7_6(runs, monkey
     with pytest.raises(SystemExit, match=r"0\.7\.5.*0\.7\.6 or later"):
         run_serve(monkeypatch, "up", "qwen3.8-27b-a100-80g")
     assert ran == []
+
+
+def test_up_stops_before_touching_colab_without_an_ssh_key(runs, home, monkeypatch):
+    """`colab ssh` finds no key after the VM is up, so the tunnel fails on a paid VM."""
+    monkeypatch.setattr(cli, "ssh_key", FIND_SSH_KEY)
+    monkeypatch.setattr(cli, "colab_version", lambda: (0, 8, 0))
+    key_pair(home / ".ssh" / "id_ed25519_other")  # a key `colab ssh` doesn't look for
+    ran = []
+
+    def record(cmd, **kwargs):
+        ran.append(list(cmd))
+        return SimpleNamespace(returncode=0, stdout="", stderr="")
+
+    monkeypatch.setattr(cli.subprocess, "run", record)
+    monkeypatch.setattr(cli.subprocess, "Popen", record)
+    monkeypatch.setattr(cli, "colab_sessions", lambda: record(["colab", "sessions"]).stdout)
+    with pytest.raises(SystemExit, match="COLAB_SSH_KEY"):
+        run_serve(monkeypatch, "up", "qwen3.8-27b-a100-80g")
+    assert ran == []
+
+
+@pytest.mark.parametrize("names", [("id_ed25519", "id_ecdsa"), ("id_ecdsa",)])
+def test_ssh_key_finds_the_key_colab_ssh_uses(home, names):
+    for name in names:
+        key_pair(home / ".ssh" / name)
+    assert FIND_SSH_KEY() == home / ".ssh" / names[0]
+
+
+def test_ssh_key_needs_both_halves_of_the_pair(home):
+    (home / ".ssh").mkdir()
+    (home / ".ssh" / "id_ed25519.pub").write_text("ssh-ed25519 AAAA test")
+    with pytest.raises(SystemExit, match="ssh-keygen -t ed25519"):
+        FIND_SSH_KEY()
+
+
+def test_ssh_key_uses_colab_ssh_key(home, monkeypatch):
+    key = key_pair(home / "keys" / "colab")
+    for value in (str(key), f"{key}.pub"):
+        monkeypatch.setattr(
+            cli, "dotenv_get", lambda name, value=value: value if name == "COLAB_SSH_KEY" else None
+        )
+        assert FIND_SSH_KEY() == key
+    monkeypatch.setattr(
+        cli, "dotenv_get", lambda name: str(home / "missing") if name == "COLAB_SSH_KEY" else None
+    )
+    with pytest.raises(SystemExit, match="COLAB_SSH_KEY"):
+        FIND_SSH_KEY()
+
+
+def test_the_tunnel_signs_in_with_the_chosen_key(monkeypatch, tmp_path):
+    key = key_pair(tmp_path / "my key")
+    monkeypatch.setattr(cli, "colab_bin", lambda: "/opt/colab cli/colab")
+    started = {}
+    monkeypatch.setattr(
+        cli.subprocess, "Popen", lambda cmd, **kwargs: started.setdefault("cmd", cmd)
+    )
+    cli.open_tunnel(SESSION, 18000, None, key)
+    cmd = started["cmd"]
+    assert cmd[cmd.index("-i") + 1] == str(key)
+    assert "IdentitiesOnly=yes" in cmd
+    proxy = next(arg for arg in cmd if arg.startswith("ProxyCommand="))
+    assert proxy == f"ProxyCommand='/opt/colab cli/colab' ssh --proxy-mode -s {SESSION} -i '{key}'"
 
 
 def test_up_goes_on_when_the_cli_version_cannot_be_read(monkeypatch, capsys):

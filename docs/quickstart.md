@@ -64,17 +64,21 @@ When the sign-in works, the command lists your Colab sessions. With none running
 
 ## Check your SSH key
 
-The tunnel signs in to the VM with your SSH key. List the public key:
+The tunnel signs in to the VM with your SSH key. `colab ssh` looks for `~/.ssh/id_ed25519`, then
+`~/.ssh/id_ecdsa`. List the key pair:
 
 ```bash
-ls ~/.ssh/id_ed25519.pub
+ls ~/.ssh/id_ed25519 ~/.ssh/id_ed25519.pub
 ```
 
-If the file does not exist, create a key:
+If the files don't exist, create a key:
 
 ```bash
 ssh-keygen -t ed25519
 ```
+
+To use another ed25519 or ECDSA key instead, add its path to `.env.local`, for example
+`COLAB_SSH_KEY=~/.ssh/id_ed25519_colab`. `serve up` checks for the key before it starts a VM.
 
 ## Preview the server command
 

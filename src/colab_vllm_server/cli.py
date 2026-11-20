@@ -29,6 +29,7 @@ import dataclasses
 import json
 import os
 import re
+import shlex
 import shutil
 import signal
 import socket
@@ -49,6 +50,8 @@ MAX_TUNNEL_RECONNECTS = 5
 # The first colab CLI release where `--timeout 0` means no limit and
 # `colab ssh -- CMD` runs one command.
 MIN_COLAB_CLI = (0, 7, 6)
+# The keys `colab ssh` looks for in ~/.ssh, in its order. It rejects RSA.
+DEFAULT_SSH_KEYS = ("id_ed25519", "id_ecdsa")
 
 
 KILL_VLLM = """
@@ -192,6 +195,33 @@ def require_colab_cli():
         )
 
 
+def ssh_key() -> Path:
+    """The private key the tunnel signs in with. Exits if it is missing.
+
+    COLAB_SSH_KEY names one. Otherwise it is the first key that `colab ssh`
+    itself looks for. Both halves must exist: `colab ssh` sends the public key
+    to the VM, and `ssh` signs in with the private key.
+    """
+    configured = dotenv_get("COLAB_SSH_KEY")
+    if configured:
+        key = Path(configured.removesuffix(".pub")).expanduser()
+        if not (key.is_file() and Path(f"{key}.pub").is_file()):
+            sys.exit(
+                f"[serve] COLAB_SSH_KEY is {configured}, but the tunnel needs both {key} "
+                f"and {key}.pub."
+            )
+        return key
+    for name in DEFAULT_SSH_KEYS:
+        key = Path.home() / ".ssh" / name
+        if key.is_file() and Path(f"{key}.pub").is_file():
+            return key
+    sys.exit(
+        "[serve] the tunnel needs an SSH key, and ~/.ssh has no id_ed25519 or id_ecdsa key pair, "
+        "which are the keys `colab ssh` looks for. Create one with `ssh-keygen -t ed25519`, or "
+        "set COLAB_SSH_KEY in .env.local to the path of another ed25519 or ECDSA private key."
+    )
+
+
 def colab_bin() -> str:
     path = os.environ.get("COLAB_BIN") or shutil.which("colab")
     if not path:
@@ -293,12 +323,18 @@ def cmd_resolve(args):
     print(r.command())
 
 
-def open_tunnel(session: str, port: int, log) -> subprocess.Popen:
-    proxy = f"{colab_bin()} ssh --proxy-mode -s {session}"
+def open_tunnel(session: str, port: int, log, key: Path) -> subprocess.Popen:
+    # `colab ssh -i` registers the key's public half with the VM, and `ssh -i`
+    # signs in with the private half, so both sides use the same key.
+    proxy = shlex.join([colab_bin(), "ssh", "--proxy-mode", "-s", session, "-i", str(key)])
     return subprocess.Popen(
         [
             "ssh",
             "-N",
+            "-i",
+            str(key),
+            "-o",
+            "IdentitiesOnly=yes",
             "-o",
             f"ProxyCommand={proxy}",
             "-o",
@@ -332,6 +368,7 @@ def cmd_up(args):
 
     colab = colab_bin()
     require_colab_cli()
+    key = ssh_key()
     session = session_name(r.preset)
     reuse = f"[{session}]" in colab_sessions()
     if reuse and not args.restart:
@@ -417,7 +454,7 @@ def cmd_up(args):
             exec_cmd, stdout=log, stderr=subprocess.STDOUT, start_new_session=True
         )
     tunnel_log = open(run_dir / "tunnel.log", "w")  # noqa: SIM115 - outlives this function in ssh
-    tunnel = open_tunnel(session, args.port, tunnel_log)
+    tunnel = open_tunnel(session, args.port, tunnel_log, key)
 
     state = {
         "preset": r.preset,
@@ -460,7 +497,7 @@ def cmd_up(args):
             print("[serve] tunnel dropped, reconnecting ...")
             # The VM's SSH session limit is usually small; let the old slot free.
             time.sleep(5)
-            tunnel = open_tunnel(session, args.port, tunnel_log)
+            tunnel = open_tunnel(session, args.port, tunnel_log, key)
             state["tunnel_pid"] = tunnel.pid
             save_state(r.preset, state)
         if endpoint_ready(state):
@@ -492,12 +529,13 @@ def cmd_connect(args):
     state = load_state(args.preset)
     if not state:
         sys.exit(f"[serve] {args.preset} is not running; `serve up {args.preset}` first")
+    key = ssh_key()
     # A runtime's SSH session limit is usually small (HTTP 429 when full), so
     # the old tunnel must be gone before the new one connects.
     stop_tunnel(state)
     time.sleep(2)
     tunnel_log = open(Path(state["run_dir"]) / "tunnel.log", "a")  # noqa: SIM115 - outlives this function in ssh
-    tunnel = open_tunnel(state["session"], state["port"], tunnel_log)
+    tunnel = open_tunnel(state["session"], state["port"], tunnel_log, key)
     state["tunnel_pid"] = tunnel.pid
     save_state(args.preset, state)
     for _ in range(30):

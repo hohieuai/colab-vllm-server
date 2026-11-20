@@ -6,6 +6,17 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- `COLAB_SSH_KEY` names the SSH key for the tunnel, for a key not called `~/.ssh/id_ed25519` or
+  `~/.ssh/id_ecdsa`. `serve` passes it to both `colab ssh` and `ssh`.
+
+### Changed
+
+- `serve up` and `serve connect` check for the tunnel's SSH key pair before they touch Colab.
+  Before, a missing key showed only after the VM had started, when the tunnel failed five times
+  with `no SSH public key found` and the VM kept running.
+
 ## [0.0.2] - 2026-11-21
 
 Supports the `colab` CLI 0.7.6 or later from PyPI, including 0.8.0. `serve up` checks the CLI's
