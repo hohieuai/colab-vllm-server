@@ -53,11 +53,13 @@ output to the local log has ended. The local `colab exec` that copies it stops w
 to the VM drops. The server keeps running on the VM. To get a live log again, restart the endpoint
 with `uv run serve up <preset> --restart`.
 
-## Fix "Already-active SSH session (HTTP 429)"
+## Fix "SSH session limit reached (HTTP 429)"
 
 A Colab runtime allows only a small number of concurrent `colab ssh` connections. The limit
 depends on the Colab plan. The endpoint's tunnel uses one slot, so another `colab ssh` to the
-same session often fails with HTTP 429 while the tunnel is open.
+same session often fails with HTTP 429 while the tunnel is open. The colab CLI reports it as
+`SSH session limit reached (HTTP 429): 1 of 1 SSH sessions in use on this runtime`, or as
+`Already-active SSH session (HTTP 429)` when Colab doesn't say what the limit is.
 
 To run a shell command on the VM, free that slot, run the command, then reopen the tunnel.
 If `serve status` already shows `tunnel=down`, skip the `kill` line:
@@ -76,6 +78,30 @@ stop it with Ctrl+C.
 
 Run `colab sessions` in a terminal. It prints a URL. Open it, approve access, and paste the code
 back. Then run the `serve` command again.
+
+## Fix "could not read its sign-in from the OS keyring"
+
+Since version 0.7.6, the colab CLI keeps its sign-in in the OS keyring. A locked keyring, common on
+Linux over SSH, waits for an unlock prompt that the terminal never shows. After 30 seconds the CLI
+gives up and starts a new sign-in, and `serve` stops with this message instead of waiting for it.
+
+Unlock the keyring, for example by signing in to the computer's desktop, and run the `serve`
+command again. The end of the message repeats the CLI's own reason. If it says that no keyring
+backend is available, install one for your system, then sign in again with `colab sessions`.
+
+## Fix "serve up needs 0.7.6 or later"
+
+`serve up` checks the colab CLI's version before it touches Colab. Version 0.7.5 and older read
+the launch's `--timeout 0` as a deadline that has already passed, not as no limit. Upgrade the
+CLI, then run `serve up` again:
+
+```bash
+uv tool upgrade google-colab-cli
+colab version
+```
+
+If `serve up` prints `could not read the colab CLI's version`, it goes on without the check. Run
+`colab version` to see which version you have.
 
 ## Fix a failed colab new
 

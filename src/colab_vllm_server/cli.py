@@ -28,6 +28,7 @@ import argparse
 import dataclasses
 import json
 import os
+import re
 import shutil
 import signal
 import socket
@@ -45,6 +46,9 @@ LOG_DIR = Path.home() / "colab-runs"  # read by colab-monitor's Logs page
 READY_TIMEOUT_S = 45 * 60
 DEFAULT_API_KEY = "vllm"
 MAX_TUNNEL_RECONNECTS = 5
+# The first colab CLI release where `--timeout 0` means no limit and
+# `colab ssh -- CMD` runs one command.
+MIN_COLAB_CLI = (0, 7, 6)
 
 
 KILL_VLLM = """
@@ -125,12 +129,67 @@ def colab_sessions() -> str:
     except subprocess.TimeoutExpired:
         sys.exit("[serve] `colab sessions` did not answer within 2 minutes; check your network")
     output = proc.stdout + proc.stderr
+    # Since 0.7.6 the CLI keeps its sign-in in the OS keyring. A locked keyring
+    # waits for an unlock prompt that a terminal over SSH never shows; after 30 s
+    # the CLI warns and starts a new sign-in, which is the wrong fix.
+    keyring_error = re.search(
+        r"could not read the oauth token from the os keyring.*", output, re.IGNORECASE
+    )
+    if keyring_error:
+        sys.exit(
+            "[serve] the colab CLI could not read its sign-in from the OS keyring. If the "
+            "keyring is locked, unlock it, for example by signing in to the computer's desktop, "
+            f"and try again. The CLI said: {keyring_error[0].strip()}"
+        )
     if proc.returncode != 0 or "authorization code" in output.lower():
         sys.exit(
             "[serve] the colab CLI is not signed in. Run `colab sessions` in a terminal, "
             "complete the sign-in, and try again."
         )
     return output
+
+
+def colab_version() -> tuple[int, int, int] | None:
+    """The colab CLI's release, such as (0, 8, 0), or None if it can't be read.
+
+    `colab version` prints `Version: X` on stderr. A development build such as
+    0.7.6.dev12, which the docs told users to install from source before 0.7.6
+    reached PyPI, counts as its release.
+    """
+    try:
+        proc = subprocess.run(
+            [colab_bin(), "version"],
+            capture_output=True,
+            text=True,
+            stdin=subprocess.DEVNULL,
+            timeout=60,
+            check=False,
+        )
+    except (OSError, subprocess.TimeoutExpired):
+        return None
+    match = re.search(r"Version:\s*(\d+)\.(\d+)\.(\d+)", (proc.stdout or "") + (proc.stderr or ""))
+    return (int(match[1]), int(match[2]), int(match[3])) if match else None
+
+
+def require_colab_cli():
+    """Exit before anything touches Colab if the CLI is older than MIN_COLAB_CLI.
+
+    0.7.5 and older pass `--timeout` to the kernel client as a deadline for the
+    whole run, so the launch's `--timeout 0` has passed at once instead of
+    meaning no limit.
+    """
+    need = ".".join(map(str, MIN_COLAB_CLI))
+    found = colab_version()
+    if found is None:
+        print(
+            f"[serve] WARNING: could not read the colab CLI's version; serve up needs {need} or later"
+        )
+        return
+    if found < MIN_COLAB_CLI:
+        sys.exit(
+            f"[serve] the colab CLI is version {'.'.join(map(str, found))}, and serve up needs "
+            f"{need} or later. Upgrade it with `uv tool upgrade google-colab-cli`, then try again."
+        )
 
 
 def colab_bin() -> str:
@@ -272,6 +331,7 @@ def cmd_up(args):
         )
 
     colab = colab_bin()
+    require_colab_cli()
     session = session_name(r.preset)
     reuse = f"[{session}]" in colab_sessions()
     if reuse and not args.restart:
