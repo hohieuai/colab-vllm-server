@@ -13,7 +13,7 @@ hour until it is stopped, so always stop what you start.
 
 - Run every `serve` command from the repository root, with `uv run serve ...`. Outside the
   repository, `uv run` fails with `Failed to spawn: serve`. If the repository is missing, clone it:
-  `git clone https://github.com/hohieuai/colab-vllm-server`.
+  `git clone --branch v0.0.2 https://github.com/hohieuai/colab-vllm-server`.
 - Check that the Colab CLI is signed in with `colab sessions`. If it asks for an authorization code,
   stop and ask the user to run `colab sessions` in their own terminal. Never paste codes for them.
 - If `serve` says the CLI could not read its sign-in from the OS keyring, the keyring is usually

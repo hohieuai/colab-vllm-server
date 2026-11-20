@@ -43,7 +43,7 @@ If `colab version` prints 0.7.5 or earlier, upgrade it with `uv tool upgrade goo
 Now get colab-vllm-server and go into its folder. Run every later command from this folder:
 
 ```bash
-git clone https://github.com/hohieuai/colab-vllm-server
+git clone --branch v0.0.2 https://github.com/hohieuai/colab-vllm-server
 cd colab-vllm-server
 ```
 

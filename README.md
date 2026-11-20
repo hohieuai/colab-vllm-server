@@ -53,7 +53,7 @@ Before you start, you need:
 1. Download colab-vllm-server:
 
    ```bash
-   git clone https://github.com/hohieuai/colab-vllm-server
+   git clone --branch v0.0.2 https://github.com/hohieuai/colab-vllm-server
    cd colab-vllm-server
    ```
 
@@ -158,7 +158,7 @@ spending, and the server log in a local dashboard. colab-vllm-server writes the 
 `~/colab-runs/`, where Colab Monitor reads it, so the log appears without extra setup:
 
 ```bash
-uv tool install git+https://github.com/hohieuai/colab-monitor
+uv tool install git+https://github.com/hohieuai/colab-monitor@v0.0.2
 colab-monitor --open
 ```
 
