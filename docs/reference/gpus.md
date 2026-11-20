@@ -60,7 +60,7 @@ The recipe maintainers have not tested borrowed profiles.
 
 | Field | Description |
 |---|---|
-| `accelerator` | Value for `colab new --gpu`: `T4`, `L4`, `G4`, `H100`, or `A100`. Default: the entry's key. The resolver rejects any other value, because `colab new` silently gives an A100 for an unknown one. |
+| `accelerator` | Value for `colab new --gpu`: `T4`, `L4`, `G4`, `H100`, or `A100`. Default: the entry's key. The resolver rejects any other value before a VM starts. `colab new` rejects it too since CLI 0.7.6, and older releases silently gave an A100. |
 | `high_mem` | `true` to pass `--high-mem`. |
 | `recipe_hw` | Recipe profile whose render is used. |
 | `exact` | `true` when the profile is the same chip as the Colab GPU. |

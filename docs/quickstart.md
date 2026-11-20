@@ -30,14 +30,15 @@ Open a new terminal so that `uv` is on your `PATH`, and check it:
 uv --version
 ```
 
-Next, install the Colab CLI. colab-vllm-server needs a build with idle `--timeout`
-semantics (`0` = no limit; after google-colab-cli 0.7.5). Until that lands on PyPI, install
-from source:
+Next, install the Colab CLI. colab-vllm-server needs version 0.7.6 or later. It is the first
+release where `--timeout 0` means no time limit and `colab ssh -- CMD` runs a single command:
 
 ```bash
-uv tool install git+https://github.com/googlecolab/google-colab-cli
+uv tool install google-colab-cli
 colab version
 ```
+
+If `colab version` prints 0.7.5 or earlier, upgrade it with `uv tool upgrade google-colab-cli`.
 
 Now get colab-vllm-server and go into its folder. Run every later command from this folder:
 
